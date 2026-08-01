@@ -1,0 +1,82 @@
+---
+// Fixed bottom bar. The default tagline and link cluster are the standalone
+// tool's; a consuming site overrides the tagline via its named slot and the
+// link cluster via the default slot.
+import BmcLogo from './BmcLogo.astro';
+import LinesVerticalSmallIcon from './LinesVerticalSmallIcon.astro';
+import { SITE } from '../content/site';
+import { isActivePath } from '../lib/routes';
+
+interface Props {
+  /** Continue a SplitBackdrop page's column split through the bar (see Header). */
+  split?: boolean;
+}
+const { split = false } = Astro.props;
+const currentPath = Astro.url.pathname;
+// startsWith('/license') before: equivalent today (the page has no subpaths) but
+// it would also have matched a future /license-faq. One shared matcher now.
+const licenseActive = isActivePath(currentPath, '/license');
+---
+
+<footer
+  class:list={[
+    'fixed inset-x-0 bottom-0 z-40 bg-background',
+    split ? 'border-t md:border-t-0' : 'border-t',
+  ]}
+>
+  {
+    split && (
+      <>
+        <div
+          aria-hidden="true"
+          class="split-boundary pointer-events-none absolute inset-y-0 right-0 -z-10 bg-card md:border-t"
+        />
+        <div
+          aria-hidden="true"
+          class="split-sidebar-end pointer-events-none absolute inset-y-0 left-0 -z-10 hidden border-t md:block"
+        />
+      </>
+    )
+  }
+  <div
+    class="mx-auto flex h-footer max-w-7xl items-center gap-4 px-4 font-mono text-2xs font-medium text-muted-foreground/80"
+  >
+    <slot name="tagline">
+      <span class="inline-flex items-center gap-1.5 truncate uppercase">
+        <LinesVerticalSmallIcon class="h-3.5 w-3.5 shrink-0 text-accent-ink" />
+        Bookmark separators, done right
+      </span>
+    </slot>
+    <div class="ml-auto flex items-center gap-4">
+      <slot>
+        <a
+          href="/license/"
+          aria-current={licenseActive ? 'page' : undefined}
+          class:list={[
+            'transition-colors hover:text-foreground',
+            licenseActive && 'text-foreground',
+          ]}
+        >
+          License
+        </a>
+        <a
+          href={SITE.githubRepo}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center transition-colors hover:text-foreground"
+        >
+          GitHub
+        </a>
+        <a
+          href={SITE.coffeeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Buy me a coffee"
+          class="inline-flex items-center transition-colors hover:text-foreground"
+        >
+          <BmcLogo />
+        </a>
+      </slot>
+    </div>
+  </div>
+</footer>

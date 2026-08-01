@@ -1,0 +1,184 @@
+---
+// The page shell: head (SEO + the pre-paint bootstrap), sticky header, fixed
+// footer. Every page provides title/description/path; the header/footer slots
+// let a consuming site swap its own chrome while reusing the shell.
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import PrePaintBootstrap from '../components/PrePaintBootstrap.astro';
+import Header, { type HeaderNavLink } from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../content/site';
+import { jsonLdString, webApplicationSchema } from '../lib/schema';
+import { iconTemplates as defaultIconTemplates } from '../lib/iconTemplates';
+import { TOOL_PATH } from '../lib/bookmarkUrl';
+import { DEFAULT_SEPARATOR_ICON } from '../lib/favicon';
+import { DEFAULT_COLOR_HEX } from '../lib/colors';
+import config from '../../public/config.json';
+import type { Config } from '../types';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Canonical path, e.g. "/separators/". */
+  path?: string;
+  ogImage?: string;
+  /** Open Graph object type; article pages on a consuming site pass "article". */
+  ogType?: string;
+  noindex?: boolean;
+  /** Extra JSON-LD blocks (e.g. a breadcrumb list). */
+  jsonLd?: object[];
+  navLinks?: HeaderNavLink[];
+  /** Render the mobile drawer button (any page with a sidebar to surface). */
+  withMenu?: boolean;
+  /** Title of the withMenu drawer; defaults to the tool's "Settings". */
+  menuTitle?: string;
+  /**
+   * Color palette for the pre-paint bootstrap (favicon + color vars).
+   * Defaults to this repo's config.json; a consuming site with a merged
+   * (superset) catalog passes its own so the bootstrap can never miss a color.
+   */
+  palette?: Record<string, string>;
+  /**
+   * Shape templates (icon name -> source SVG) the pre-paint bootstrap paints the
+   * favicon from. Defaults to this repo's catalog; a consuming site with a
+   * superset of icons passes its own so any bookmarkable icon can render.
+   * (Named iconTemplates here — the inner components call the same map
+   * `templates`; renaming this prop would break consuming sites.)
+   */
+  iconTemplates?: Record<string, string>;
+  /**
+   * Brand-default color the pre-paint bootstrap falls back to when there is no
+   * bookmark query and nothing persisted. Override when a consuming site's brand
+   * default differs from this repo's.
+   */
+  defaultHex?: string;
+  /** Brand-default icon for the same fallback. See defaultHex. */
+  defaultIcon?: string;
+  /** Extra classes for <body>, e.g. a page that locks page scroll at md+. */
+  bodyClass?: string;
+  /**
+   * The page renders a SplitBackdrop: continue its two-tone column split
+   * through the default Header and Footer bands.
+   */
+  split?: boolean;
+}
+
+const {
+  title,
+  description = SITE.defaultDescription,
+  path = '/',
+  ogImage = SITE.defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  jsonLd = [],
+  navLinks = [],
+  withMenu = false,
+  menuTitle,
+  palette = (config as unknown as Config).colors,
+  iconTemplates = defaultIconTemplates,
+  defaultHex = DEFAULT_COLOR_HEX,
+  defaultIcon = DEFAULT_SEPARATOR_ICON,
+  bodyClass,
+  split = false,
+} = Astro.props;
+
+// Only the tool page serves bookmark URLs (any icon + any color), so it needs
+// every shape inlined to render synchronously before paint. Other pages only
+// ever show the default favicon, so they inline just that one shape.
+//
+// Both props are consumer seams, so a name that is not in the map is a caller
+// bug. Fail the build rather than pass `{ [defaultIcon]: undefined }` down: the
+// bootstrap bails on a missing template and the page would then ship with no
+// favicon at all, silently, on every page that is not the tool.
+const isToolPage = path === TOOL_PATH || path === TOOL_PATH.slice(0, -1);
+if (!isToolPage && !iconTemplates[defaultIcon]) {
+  throw new Error(`Base: no source SVG template for defaultIcon "${defaultIcon}"`);
+}
+const faviconTemplates = isToolPage ? iconTemplates : { [defaultIcon]: iconTemplates[defaultIcon] };
+
+const fullTitle = title ? `${title} | ${SITE.name}` : SITE.defaultTitle;
+const canonical = `${SITE.baseUrl}${path}`;
+const ogImageUrl = `${SITE.baseUrl}${ogImage}`;
+
+// Brand-level structured data, identical on every page.
+const webApplication = webApplicationSchema();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <PrePaintBootstrap
+      palette={palette}
+      templates={faviconTemplates}
+      defaultHex={defaultHex}
+      defaultIcon={defaultIcon}
+    />
+    <!-- The favicon link is created and kept in sync by the pre-paint bootstrap
+         above — never hardcode an href here (see PrePaintBootstrap.astro). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Self-hosted fonts (see the fonts array in astro.config.mjs); theme.css
+         maps these variables onto Tailwind's --font-sans/--font-mono. -->
+    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-jetbrains-mono" preload />
+
+    <meta
+      name="keywords"
+      content="bookmark separators, chrome bookmarks, bookmark bar organizer, visual bookmarks, bookmark dividers, favicon bookmarks"
+    />
+    <meta name="author" content={SITE.author} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+
+    <title>{fullTitle}</title>
+    <link rel="canonical" href={canonical} />
+    <meta name="description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <script is:inline type="application/ld+json" set:html={jsonLdString(webApplication)} />
+    {
+      jsonLd.map((block) => (
+        <script is:inline type="application/ld+json" set:html={jsonLdString(block)} />
+      ))
+    }
+    <slot name="head" />
+  </head>
+  <body class:list={bodyClass}>
+    <!-- Skip link: visually hidden until focused, so keyboard users can jump
+         past the sticky header controls straight to the page content. -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:border focus:border-input focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:shadow-md"
+    >
+      Skip to content
+    </a>
+    {
+      /* No background here (and none on body): html owns bg-background
+      (theme.css base layer) so the -z-10 SplitBackdrop layer can show through
+      above the canvas. `relative` makes this wrapper the containing block
+      SplitBackdrop's offsets are computed against. */
+    }
+    <div class="relative flex min-h-screen flex-col">
+      <slot name="header">
+        <Header navLinks={navLinks} withMenu={withMenu} menuTitle={menuTitle} split={split} />
+      </slot>
+      <!-- pb clears the fixed footer; each page owns its own inner layout. -->
+      <main id="main" class="mx-auto w-full max-w-7xl flex-1 px-4 pt-7 pb-20">
+        <slot />
+      </main>
+      <slot name="footer">
+        <Footer split={split} />
+      </slot>
+    </div>
+  </body>
+</html>

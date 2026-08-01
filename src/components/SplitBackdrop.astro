@@ -1,0 +1,37 @@
+---
+/*
+Two-tone page split (Lucide-style): the tone change alone marks the sidebar
+boundary, with no divider line. Render it once inside any page that uses the
+shared two-column shell (18rem sidebar + gap-10 inside Base's max-w-7xl px-4
+main), and pass `split` to Base so the Header/Footer bands carry the same
+boundary through the chrome.
+
+How the tones are layered — the CARD side comes from the canvas, not this
+component: on split pages html:has(...) (theme.css) paints the canvas bg-card
+(the canvas owns the page background; body stays background-free so -z-10
+layers like this one show through). This layer paints the OTHER side:
+bg-background from the viewport's left edge to the boundary.
+
+How the geometry works:
+- The layer is absolute inside Base's `relative min-h-screen` wrapper, so
+  inset-y-0 spans the full page height (the 100dvh tool page and normally
+  scrolling pages alike) and % offsets resolve against the same width the
+  centered container uses.
+- right comes from the shared `split-sidebar-boundary` utility (theme.css),
+  fed by --split-boundary-x, which puts the tone change mid-gap. Keep that
+  property in sync with the shell geometry.
+- left = calc(50% - 50vw) bleeds to the true viewport edge.
+- -z-10 paints under all content but above the canvas background (html owns
+  the page background; theme.css base layer), which is why neither body nor
+  Base's wrapper may carry a background of their own.
+Below md the boundary resolves to 0, so this layer collapses to nothing and
+the card canvas spans the full width — the content keeps the same surface
+color it has in the desktop content column.
+*/
+---
+
+<div
+  aria-hidden="true"
+  class="split-sidebar-boundary pointer-events-none absolute inset-y-0 left-[calc(50%_-_50vw)] -z-10 bg-background"
+>
+</div>

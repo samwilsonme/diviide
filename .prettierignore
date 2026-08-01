@@ -1,0 +1,12 @@
+dist
+.astro
+coverage
+node_modules
+pnpm-lock.yaml
+
+# Generated + source-of-truth data (kept as-is)
+public
+assets
+
+# Source SVGs / logos
+*.svg

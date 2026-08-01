@@ -1,0 +1,22 @@
+---
+// The 404 body, shared so the tool's page and a consuming site's page render the
+// same thing through their own layouts (the same arrangement as LicenseContent).
+// Both repos previously carried byte-identical copies of this markup, one of which
+// had already picked up a whitespace fix the other hadn't.
+import Lucide from './icons/Lucide.astro';
+
+interface Props {
+  /** Where "back to the separators" points. Defaults to the tool page. */
+  toolPath?: string;
+}
+const { toolPath = '/separators/' } = Astro.props;
+---
+
+<div class="mx-auto flex flex-col items-center justify-center py-24 text-center">
+  <Lucide name="frown" class="mb-4 h-12 w-12 text-muted-foreground" />
+  <h1 class="mb-2 text-2xl font-bold">Page not found</h1>
+  <p class="text-muted-foreground">
+    That page doesn't exist. Let's get you{' '}
+    <a href={toolPath} class="text-accent-ink hover:underline">back to the separators</a>.
+  </p>
+</div>

@@ -1,0 +1,146 @@
+---
+// Pre-paint bootstrap, injected first in <head>. Three jobs, all before first
+// paint so nothing flashes and no wrong favicon is ever observable:
+//
+//   1. OWN the favicon link. Static HTML must not hardcode a favicon href: a
+//      bookmark URL (/separators/?icon=…&color=…) is served by this same
+//      prerendered page, and a hardcoded default href would let the browser
+//      re-associate the default icon over the saved bookmark's frozen favicon.
+//      This script creates <link id="diviide-favicon"> from the bookmark query when
+//      present, else from the persisted color + default icon.
+//   2. Paint --icon-color / --accent-live so the masked icon grids and accent
+//      surfaces never flash the fallback color. Mirrors applyColor() in
+//      src/tool/main.ts (a custom/URL hex maps to the brand default accent, see
+//      accentHex).
+//   3. Resolve the light/dark theme class + browser-chrome color. THEME_COLOR
+//      mirrors --background in theme.css (no stylesheet is loaded yet pre-paint,
+//      so the token can't be read); the runtime theme toggle reads the real
+//      token afterwards.
+//
+// The palette is inlined from config.json at build so it can never drift.
+import { DEFAULT_COLOR_HEX, THEME_COLOR } from '../lib/colors';
+import { DEFAULT_SEPARATOR_ICON } from '../lib/favicon';
+import { TOOL_PATH } from '../lib/bookmarkUrl';
+
+interface Props {
+  /** Color palette (name -> hex), e.g. config.colors. Used as the accent-safe set. */
+  palette: Record<string, string>;
+  /**
+   * Color-agnostic shape templates (icon name -> source SVG) the favicon paints
+   * on the fly. The tool page passes the whole map (any icon can be bookmarked
+   * with any color, and it must render synchronously here); other pages pass
+   * only the default icon. See src/layouts/Base.astro.
+   */
+  templates: Record<string, string>;
+  /** Consumer seam: override when a consuming site's brand-default color differs from this repo's. */
+  defaultHex?: string;
+  /** Consumer seam: override when a consuming site's brand-default icon differs from this repo's. */
+  defaultIcon?: string;
+}
+
+const {
+  palette,
+  templates,
+  defaultHex = DEFAULT_COLOR_HEX,
+  defaultIcon = DEFAULT_SEPARATOR_ICON,
+} = Astro.props;
+const toolPath = TOOL_PATH;
+const themeColor = THEME_COLOR;
+---
+
+<script
+  is:inline
+  define:vars={{ palette, templates, defaultHex, defaultIcon, toolPath, themeColor }}
+>
+  (function () {
+    // Expose the inlined shape templates so the client runtime (favicon.ts) can
+    // re-tint without re-shipping them.
+    window.__diviideIconTemplates = templates;
+
+    // A hex color, with or without a leading '#'. Keep normHex + the SVG paint
+    // (below) identical to favicon.ts so a cold bookmark load and a live re-tint
+    // produce byte-identical favicons.
+    const HEX = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+    function normHex(v) {
+      const m = HEX.exec(v);
+      if (!m) return null;
+      let h = m[1].toLowerCase();
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      return '#' + h;
+    }
+
+    // Color is a hex everywhere. `token` is a hex from the bookmark query or the
+    // persisted color; anything invalid falls back to the brand default.
+    let token, icon;
+    if (location.pathname === toolPath || location.pathname === toolPath.slice(0, -1)) {
+      const params = new URLSearchParams(location.search);
+      const qi = params.get('icon');
+      const qc = params.get('color');
+      if (qi && qc && HEX.test(qc)) {
+        icon = qi;
+        token = qc;
+      }
+    }
+    if (!token) {
+      try {
+        token = localStorage.getItem('diviide-color');
+      } catch {
+        /* blocked storage must never break the load */
+      }
+    }
+    if (!token || !HEX.test(token)) token = defaultHex;
+    if (!icon) icon = defaultIcon;
+
+    const hex = normHex(token);
+
+    // The accent only takes a palette color; a custom (URL) hex falls back to
+    // the brand default, so it never themes the whole page oddly. Mirrors
+    // accentHex() in src/lib/colors.ts.
+    const paletteHexes = Object.values(palette);
+    const accent = paletteHexes.indexOf(hex) !== -1 ? hex : defaultHex;
+
+    // Seed the color vars before touching the favicon, so a consuming site
+    // passing a bad templates map can only lose the favicon, never the colors.
+    const style = document.documentElement.style;
+    style.setProperty('--icon-color', hex);
+    style.setProperty('--accent-live', accent);
+
+    // Own-property lookup only: `icon` is user input from the query, and an
+    // inherited Object.prototype key ('constructor', '__proto__') must fall
+    // back to the default icon, not shadow it with a non-string.
+    const tpl = (Object.hasOwn(templates, icon) ? templates[icon] : null) || templates[defaultIcon];
+    if (!tpl) return;
+    let link = document.getElementById('diviide-favicon');
+    if (!link) {
+      link = document.createElement('link');
+      link.id = 'diviide-favicon';
+      link.rel = 'icon';
+      link.type = 'image/svg+xml';
+      document.head.appendChild(link);
+    }
+    const svg = tpl.replace(/(stroke|fill)="black"/g, '$1="' + hex + '"');
+    link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+  })();
+  (function () {
+    try {
+      // The theme key the header toggle persists (STORAGE_KEYS.theme) —
+      // hardcoded because this inline script cannot import storage.ts;
+      // config-integrity.test.ts pins the two together.
+      let t = localStorage.getItem('diviide-theme') || 'system';
+      if (t === 'system')
+        t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const c = document.documentElement.classList;
+      c.remove('light', 'dark');
+      c.add(t);
+      let meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'theme-color');
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', t === 'dark' ? themeColor.dark : themeColor.light);
+    } catch {
+      /* ignore */
+    }
+  })();
+</script>

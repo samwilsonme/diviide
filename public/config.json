@@ -1,0 +1,639 @@
+{
+  "colors": {
+    "red": "#ef4444",
+    "orange": "#f97316",
+    "amber": "#f59e0b",
+    "yellow": "#eab308",
+    "lime": "#84cc16",
+    "green": "#22c55e",
+    "emerald": "#10b981",
+    "teal": "#14b8a6",
+    "cyan": "#06b6d4",
+    "sky": "#0ea5e9",
+    "blue": "#3b82f6",
+    "indigo": "#6366f1",
+    "violet": "#8b5cf6",
+    "purple": "#a855f7",
+    "fuchsia": "#d946ef",
+    "pink": "#ec4899",
+    "rose": "#f43f5e",
+    "slate": "#64748b"
+  },
+  "categories": {
+    "all": "All",
+    "separators": "Separators",
+    "shapes": "Shapes",
+    "arrows": "Arrows",
+    "numbers": "Numbers",
+    "finance": "Finance",
+    "math": "Math",
+    "brackets": "Brackets",
+    "symbols": "Symbols"
+  },
+  "icons": {
+    "chrome-separator": {
+      "name": "Chrome Separator",
+      "category": "separators",
+      "keywords": ["chrome", "native", "built-in", "tab groups", "divider", "theme", "pipe", "vertical", "line", "separator"]
+    },
+    "pipe-small": {
+      "name": "Pipe Small",
+      "category": "separators",
+      "keywords": ["pipe", "vertical", "line", "separator", "small"]
+    },
+    "line-horizontal-small": {
+      "name": "Line Horizontal Small",
+      "category": "separators",
+      "keywords": ["line", "horizontal", "separator", "divider", "small"]
+    },
+    "lines-vertical-small": {
+      "name": "Lines Vertical Small",
+      "category": "separators",
+      "keywords": ["lines", "vertical", "separator", "divider", "double", "small"]
+    },
+    "lines-horizontal-small": {
+      "name": "Lines Horizontal Small",
+      "category": "separators",
+      "keywords": ["lines", "horizontal", "separator", "divider", "double", "small"]
+    },
+    "pipe": {
+      "name": "Pipe",
+      "category": "separators",
+      "keywords": ["pipe", "vertical", "line", "separator"]
+    },
+    "line-horizontal": {
+      "name": "Line Horizontal",
+      "category": "separators",
+      "keywords": ["line", "horizontal", "separator", "divider"]
+    },
+    "lines-vertical": {
+      "name": "Lines Vertical",
+      "category": "separators",
+      "keywords": ["lines", "vertical", "separator", "divider", "double"]
+    },
+    "lines-horizontal": {
+      "name": "Lines Horizontal",
+      "category": "separators",
+      "keywords": ["lines", "horizontal", "separator", "divider", "double"]
+    },
+    "colon-vertical": {
+      "name": "Colon Vertical",
+      "category": "separators",
+      "keywords": ["colon", "vertical", "dots", "separator"]
+    },
+    "colon-horizontal": {
+      "name": "Colon Horizontal",
+      "category": "separators",
+      "keywords": ["colon", "horizontal", "dots", "separator"]
+    },
+    "ellipsis-vertical": {
+      "name": "Ellipsis Vertical",
+      "category": "separators",
+      "keywords": ["ellipsis", "vertical", "dots", "more", "separator"]
+    },
+    "ellipsis-horizontal": {
+      "name": "Ellipsis Horizontal",
+      "category": "separators",
+      "keywords": ["ellipsis", "horizontal", "dots", "more", "separator"]
+    },
+    "wavy-line-vertical": {
+      "name": "Wavy Line Vertical",
+      "category": "separators",
+      "keywords": ["wavy", "line", "vertical", "wave", "separator"]
+    },
+    "wavy-line-horizontal": {
+      "name": "Wavy Line Horizontal",
+      "category": "separators",
+      "keywords": ["wavy", "line", "horizontal", "wave", "separator"]
+    },
+    "wavy-lines-vertical": {
+      "name": "Wavy Lines Vertical",
+      "category": "separators",
+      "keywords": ["wavy", "lines", "vertical", "wave", "separator", "double"]
+    },
+    "wavy-lines-horizontal": {
+      "name": "Wavy Lines Horizontal",
+      "category": "separators",
+      "keywords": ["wavy", "lines", "horizontal", "wave", "separator", "double"]
+    },
+    "circle-filled": {
+      "name": "Circle Filled",
+      "category": "shapes",
+      "keywords": ["circle", "dot", "round", "filled", "solid"]
+    },
+    "square-filled": {
+      "name": "Square Filled",
+      "category": "shapes",
+      "keywords": ["square", "box", "filled", "solid"]
+    },
+    "diamond-filled": {
+      "name": "Diamond Filled",
+      "category": "shapes",
+      "keywords": ["diamond", "rhombus", "filled", "solid"]
+    },
+    "triangle-filled": {
+      "name": "Triangle Filled",
+      "category": "shapes",
+      "keywords": ["triangle", "arrow", "filled", "solid"]
+    },
+    "pentagon-filled": {
+      "name": "Pentagon Filled",
+      "category": "shapes",
+      "keywords": ["pentagon", "five", "filled", "solid"]
+    },
+    "hexagon-filled": {
+      "name": "Hexagon Filled",
+      "category": "shapes",
+      "keywords": ["hexagon", "six", "filled", "solid"]
+    },
+    "octagon-filled": {
+      "name": "Octagon Filled",
+      "category": "shapes",
+      "keywords": ["octagon", "eight", "stop", "filled", "solid"]
+    },
+    "star-filled": {
+      "name": "Star Filled",
+      "category": "shapes",
+      "keywords": ["star", "favorite", "filled", "solid"]
+    },
+    "heart-filled": {
+      "name": "Heart Filled",
+      "category": "shapes",
+      "keywords": ["heart", "love", "filled", "solid"]
+    },
+    "squircle-filled": {
+      "name": "Squircle Filled",
+      "category": "shapes",
+      "keywords": ["squircle", "rounded", "square", "filled", "solid"]
+    },
+    "circle-outline": {
+      "name": "Circle Outline",
+      "category": "shapes",
+      "keywords": ["circle", "ring", "round", "outline", "hollow"]
+    },
+    "square-outline": {
+      "name": "Square Outline",
+      "category": "shapes",
+      "keywords": ["square", "box", "outline", "hollow"]
+    },
+    "diamond-outline": {
+      "name": "Diamond Outline",
+      "category": "shapes",
+      "keywords": ["diamond", "rhombus", "outline", "hollow"]
+    },
+    "triangle-outline": {
+      "name": "Triangle Outline",
+      "category": "shapes",
+      "keywords": ["triangle", "arrow", "outline", "hollow"]
+    },
+    "pentagon-outline": {
+      "name": "Pentagon Outline",
+      "category": "shapes",
+      "keywords": ["pentagon", "five", "outline", "hollow"]
+    },
+    "hexagon-outline": {
+      "name": "Hexagon Outline",
+      "category": "shapes",
+      "keywords": ["hexagon", "six", "outline", "hollow"]
+    },
+    "octagon-outline": {
+      "name": "Octagon Outline",
+      "category": "shapes",
+      "keywords": ["octagon", "eight", "stop", "outline", "hollow"]
+    },
+    "star-outline": {
+      "name": "Star Outline",
+      "category": "shapes",
+      "keywords": ["star", "favorite", "outline", "hollow"]
+    },
+    "heart-outline": {
+      "name": "Heart Outline",
+      "category": "shapes",
+      "keywords": ["heart", "love", "outline", "hollow"]
+    },
+    "squircle-outline": {
+      "name": "Squircle Outline",
+      "category": "shapes",
+      "keywords": ["squircle", "rounded", "square", "outline", "hollow"]
+    },
+    "circle-filled-small": {
+      "name": "Circle Filled Small",
+      "category": "shapes",
+      "keywords": ["circle", "dot", "round", "filled", "solid", "small", "tiny"]
+    },
+    "square-filled-small": {
+      "name": "Square Filled Small",
+      "category": "shapes",
+      "keywords": ["square", "box", "filled", "solid", "small", "tiny"]
+    },
+    "diamond-filled-small": {
+      "name": "Diamond Filled Small",
+      "category": "shapes",
+      "keywords": ["diamond", "rhombus", "filled", "solid", "small", "tiny"]
+    },
+    "triangle-filled-small": {
+      "name": "Triangle Filled Small",
+      "category": "shapes",
+      "keywords": ["triangle", "arrow", "filled", "solid", "small", "tiny"]
+    },
+    "pentagon-filled-small": {
+      "name": "Pentagon Filled Small",
+      "category": "shapes",
+      "keywords": ["pentagon", "five", "filled", "solid", "small", "tiny"]
+    },
+    "hexagon-filled-small": {
+      "name": "Hexagon Filled Small",
+      "category": "shapes",
+      "keywords": ["hexagon", "six", "filled", "solid", "small", "tiny"]
+    },
+    "octagon-filled-small": {
+      "name": "Octagon Filled Small",
+      "category": "shapes",
+      "keywords": ["octagon", "eight", "stop", "filled", "solid", "small", "tiny"]
+    },
+    "star-filled-small": {
+      "name": "Star Filled Small",
+      "category": "shapes",
+      "keywords": ["star", "favorite", "filled", "solid", "small", "tiny"]
+    },
+    "heart-filled-small": {
+      "name": "Heart Filled Small",
+      "category": "shapes",
+      "keywords": ["heart", "love", "filled", "solid", "small", "tiny"]
+    },
+    "squircle-filled-small": {
+      "name": "Squircle Filled Small",
+      "category": "shapes",
+      "keywords": ["squircle", "rounded", "square", "filled", "solid", "small", "tiny"]
+    },
+    "circle-outline-small": {
+      "name": "Circle Outline Small",
+      "category": "shapes",
+      "keywords": ["circle", "ring", "round", "outline", "hollow", "small", "tiny"]
+    },
+    "square-outline-small": {
+      "name": "Square Outline Small",
+      "category": "shapes",
+      "keywords": ["square", "box", "outline", "hollow", "small", "tiny"]
+    },
+    "diamond-outline-small": {
+      "name": "Diamond Outline Small",
+      "category": "shapes",
+      "keywords": ["diamond", "rhombus", "outline", "hollow", "small", "tiny"]
+    },
+    "triangle-outline-small": {
+      "name": "Triangle Outline Small",
+      "category": "shapes",
+      "keywords": ["triangle", "arrow", "outline", "hollow", "small", "tiny"]
+    },
+    "pentagon-outline-small": {
+      "name": "Pentagon Outline Small",
+      "category": "shapes",
+      "keywords": ["pentagon", "five", "outline", "hollow", "small", "tiny"]
+    },
+    "hexagon-outline-small": {
+      "name": "Hexagon Outline Small",
+      "category": "shapes",
+      "keywords": ["hexagon", "six", "outline", "hollow", "small", "tiny"]
+    },
+    "octagon-outline-small": {
+      "name": "Octagon Outline Small",
+      "category": "shapes",
+      "keywords": ["octagon", "eight", "stop", "outline", "hollow", "small", "tiny"]
+    },
+    "star-outline-small": {
+      "name": "Star Outline Small",
+      "category": "shapes",
+      "keywords": ["star", "favorite", "outline", "hollow", "small", "tiny"]
+    },
+    "heart-outline-small": {
+      "name": "Heart Outline Small",
+      "category": "shapes",
+      "keywords": ["heart", "love", "outline", "hollow", "small", "tiny"]
+    },
+    "squircle-outline-small": {
+      "name": "Squircle Outline Small",
+      "category": "shapes",
+      "keywords": ["squircle", "rounded", "square", "outline", "hollow", "small", "tiny"]
+    },
+
+    "arrow-up": {
+      "name": "Arrow Up",
+      "category": "arrows",
+      "keywords": ["arrow", "up", "direction", "north"]
+    },
+    "arrow-down": {
+      "name": "Arrow Down",
+      "category": "arrows",
+      "keywords": ["arrow", "down", "direction", "south"]
+    },
+    "arrow-left": {
+      "name": "Arrow Left",
+      "category": "arrows",
+      "keywords": ["arrow", "left", "direction", "west", "back"]
+    },
+    "arrow-right": {
+      "name": "Arrow Right",
+      "category": "arrows",
+      "keywords": ["arrow", "right", "direction", "east", "forward"]
+    },
+    "arrow-big-up-filled": {
+      "name": "Arrow Big Up Filled",
+      "category": "arrows",
+      "keywords": ["arrow", "up", "big", "filled", "direction"]
+    },
+    "arrow-big-down-filled": {
+      "name": "Arrow Big Down Filled",
+      "category": "arrows",
+      "keywords": ["arrow", "down", "big", "filled", "direction"]
+    },
+    "arrow-big-left-filled": {
+      "name": "Arrow Big Left Filled",
+      "category": "arrows",
+      "keywords": ["arrow", "left", "big", "filled", "direction", "back"]
+    },
+    "arrow-big-right-filled": {
+      "name": "Arrow Big Right Filled",
+      "category": "arrows",
+      "keywords": ["arrow", "right", "big", "filled", "direction", "forward"]
+    },
+    "arrow-big-up-outline": {
+      "name": "Arrow Big Up Outline",
+      "category": "arrows",
+      "keywords": ["arrow", "up", "big", "outline", "direction"]
+    },
+    "arrow-big-down-outline": {
+      "name": "Arrow Big Down Outline",
+      "category": "arrows",
+      "keywords": ["arrow", "down", "big", "outline", "direction"]
+    },
+    "arrow-big-left-outline": {
+      "name": "Arrow Big Left Outline",
+      "category": "arrows",
+      "keywords": ["arrow", "left", "big", "outline", "direction", "back"]
+    },
+    "arrow-big-right-outline": {
+      "name": "Arrow Big Right Outline",
+      "category": "arrows",
+      "keywords": ["arrow", "right", "big", "outline", "direction", "forward"]
+    },
+    "chevron-up": {
+      "name": "Chevron Up",
+      "category": "arrows",
+      "keywords": ["chevron", "up", "caret", "direction"]
+    },
+    "chevron-down": {
+      "name": "Chevron Down",
+      "category": "arrows",
+      "keywords": ["chevron", "down", "caret", "direction"]
+    },
+    "chevron-left": {
+      "name": "Chevron Left",
+      "category": "arrows",
+      "keywords": ["chevron", "left", "caret", "direction", "back"]
+    },
+    "chevron-right": {
+      "name": "Chevron Right",
+      "category": "arrows",
+      "keywords": ["chevron", "right", "caret", "direction", "forward"]
+    },
+    "move-up": {
+      "name": "Move Up",
+      "category": "arrows",
+      "keywords": ["move", "up", "arrow", "direction"]
+    },
+    "move-down": {
+      "name": "Move Down",
+      "category": "arrows",
+      "keywords": ["move", "down", "arrow", "direction"]
+    },
+    "move-left": {
+      "name": "Move Left",
+      "category": "arrows",
+      "keywords": ["move", "left", "arrow", "direction"]
+    },
+    "move-right": {
+      "name": "Move Right",
+      "category": "arrows",
+      "keywords": ["move", "right", "arrow", "direction"]
+    },
+
+    "1-large": { "name": "1 Large", "category": "numbers", "keywords": ["1", "one", "number", "large"] },
+    "2-large": { "name": "2 Large", "category": "numbers", "keywords": ["2", "two", "number", "large"] },
+    "3-large": { "name": "3 Large", "category": "numbers", "keywords": ["3", "three", "number", "large"] },
+    "4-large": { "name": "4 Large", "category": "numbers", "keywords": ["4", "four", "number", "large"] },
+    "5-large": { "name": "5 Large", "category": "numbers", "keywords": ["5", "five", "number", "large"] },
+    "6-large": { "name": "6 Large", "category": "numbers", "keywords": ["6", "six", "number", "large"] },
+    "7-large": { "name": "7 Large", "category": "numbers", "keywords": ["7", "seven", "number", "large"] },
+    "8-large": { "name": "8 Large", "category": "numbers", "keywords": ["8", "eight", "number", "large"] },
+    "9-large": { "name": "9 Large", "category": "numbers", "keywords": ["9", "nine", "number", "large"] },
+    "0-large": { "name": "0 Large", "category": "numbers", "keywords": ["0", "zero", "number", "large"] },
+
+    "1-small": { "name": "1 Small", "category": "numbers", "keywords": ["1", "one", "number", "small"] },
+    "2-small": { "name": "2 Small", "category": "numbers", "keywords": ["2", "two", "number", "small"] },
+    "3-small": { "name": "3 Small", "category": "numbers", "keywords": ["3", "three", "number", "small"] },
+    "4-small": { "name": "4 Small", "category": "numbers", "keywords": ["4", "four", "number", "small"] },
+    "5-small": { "name": "5 Small", "category": "numbers", "keywords": ["5", "five", "number", "small"] },
+    "6-small": { "name": "6 Small", "category": "numbers", "keywords": ["6", "six", "number", "small"] },
+    "7-small": { "name": "7 Small", "category": "numbers", "keywords": ["7", "seven", "number", "small"] },
+    "8-small": { "name": "8 Small", "category": "numbers", "keywords": ["8", "eight", "number", "small"] },
+    "9-small": { "name": "9 Small", "category": "numbers", "keywords": ["9", "nine", "number", "small"] },
+    "0-small": { "name": "0 Small", "category": "numbers", "keywords": ["0", "zero", "number", "small"] },
+
+    "square-1-filled": { "name": "Square 1 Filled", "category": "numbers", "keywords": ["1", "one", "number", "square", "filled"] },
+    "square-2-filled": { "name": "Square 2 Filled", "category": "numbers", "keywords": ["2", "two", "number", "square", "filled"] },
+    "square-3-filled": { "name": "Square 3 Filled", "category": "numbers", "keywords": ["3", "three", "number", "square", "filled"] },
+    "square-4-filled": { "name": "Square 4 Filled", "category": "numbers", "keywords": ["4", "four", "number", "square", "filled"] },
+    "square-5-filled": { "name": "Square 5 Filled", "category": "numbers", "keywords": ["5", "five", "number", "square", "filled"] },
+    "square-6-filled": { "name": "Square 6 Filled", "category": "numbers", "keywords": ["6", "six", "number", "square", "filled"] },
+    "square-7-filled": { "name": "Square 7 Filled", "category": "numbers", "keywords": ["7", "seven", "number", "square", "filled"] },
+    "square-8-filled": { "name": "Square 8 Filled", "category": "numbers", "keywords": ["8", "eight", "number", "square", "filled"] },
+    "square-9-filled": { "name": "Square 9 Filled", "category": "numbers", "keywords": ["9", "nine", "number", "square", "filled"] },
+    "square-0-filled": { "name": "Square 0 Filled", "category": "numbers", "keywords": ["0", "zero", "number", "square", "filled"] },
+
+    "circle-1-filled": { "name": "Circle 1 Filled", "category": "numbers", "keywords": ["1", "one", "number", "circle", "filled"] },
+    "circle-2-filled": { "name": "Circle 2 Filled", "category": "numbers", "keywords": ["2", "two", "number", "circle", "filled"] },
+    "circle-3-filled": { "name": "Circle 3 Filled", "category": "numbers", "keywords": ["3", "three", "number", "circle", "filled"] },
+    "circle-4-filled": { "name": "Circle 4 Filled", "category": "numbers", "keywords": ["4", "four", "number", "circle", "filled"] },
+    "circle-5-filled": { "name": "Circle 5 Filled", "category": "numbers", "keywords": ["5", "five", "number", "circle", "filled"] },
+    "circle-6-filled": { "name": "Circle 6 Filled", "category": "numbers", "keywords": ["6", "six", "number", "circle", "filled"] },
+    "circle-7-filled": { "name": "Circle 7 Filled", "category": "numbers", "keywords": ["7", "seven", "number", "circle", "filled"] },
+    "circle-8-filled": { "name": "Circle 8 Filled", "category": "numbers", "keywords": ["8", "eight", "number", "circle", "filled"] },
+    "circle-9-filled": { "name": "Circle 9 Filled", "category": "numbers", "keywords": ["9", "nine", "number", "circle", "filled"] },
+    "circle-0-filled": { "name": "Circle 0 Filled", "category": "numbers", "keywords": ["0", "zero", "number", "circle", "filled"] },
+
+    "squircle-1-filled": { "name": "Squircle 1 Filled", "category": "numbers", "keywords": ["1", "one", "number", "squircle", "filled"] },
+    "squircle-2-filled": { "name": "Squircle 2 Filled", "category": "numbers", "keywords": ["2", "two", "number", "squircle", "filled"] },
+    "squircle-3-filled": { "name": "Squircle 3 Filled", "category": "numbers", "keywords": ["3", "three", "number", "squircle", "filled"] },
+    "squircle-4-filled": { "name": "Squircle 4 Filled", "category": "numbers", "keywords": ["4", "four", "number", "squircle", "filled"] },
+    "squircle-5-filled": { "name": "Squircle 5 Filled", "category": "numbers", "keywords": ["5", "five", "number", "squircle", "filled"] },
+    "squircle-6-filled": { "name": "Squircle 6 Filled", "category": "numbers", "keywords": ["6", "six", "number", "squircle", "filled"] },
+    "squircle-7-filled": { "name": "Squircle 7 Filled", "category": "numbers", "keywords": ["7", "seven", "number", "squircle", "filled"] },
+    "squircle-8-filled": { "name": "Squircle 8 Filled", "category": "numbers", "keywords": ["8", "eight", "number", "squircle", "filled"] },
+    "squircle-9-filled": { "name": "Squircle 9 Filled", "category": "numbers", "keywords": ["9", "nine", "number", "squircle", "filled"] },
+    "squircle-0-filled": { "name": "Squircle 0 Filled", "category": "numbers", "keywords": ["0", "zero", "number", "squircle", "filled"] },
+
+    "square-1-outline": { "name": "Square 1 Outline", "category": "numbers", "keywords": ["1", "one", "number", "square", "outline"] },
+    "square-2-outline": { "name": "Square 2 Outline", "category": "numbers", "keywords": ["2", "two", "number", "square", "outline"] },
+    "square-3-outline": { "name": "Square 3 Outline", "category": "numbers", "keywords": ["3", "three", "number", "square", "outline"] },
+    "square-4-outline": { "name": "Square 4 Outline", "category": "numbers", "keywords": ["4", "four", "number", "square", "outline"] },
+    "square-5-outline": { "name": "Square 5 Outline", "category": "numbers", "keywords": ["5", "five", "number", "square", "outline"] },
+    "square-6-outline": { "name": "Square 6 Outline", "category": "numbers", "keywords": ["6", "six", "number", "square", "outline"] },
+    "square-7-outline": { "name": "Square 7 Outline", "category": "numbers", "keywords": ["7", "seven", "number", "square", "outline"] },
+    "square-8-outline": { "name": "Square 8 Outline", "category": "numbers", "keywords": ["8", "eight", "number", "square", "outline"] },
+    "square-9-outline": { "name": "Square 9 Outline", "category": "numbers", "keywords": ["9", "nine", "number", "square", "outline"] },
+    "square-0-outline": { "name": "Square 0 Outline", "category": "numbers", "keywords": ["0", "zero", "number", "square", "outline"] },
+
+    "circle-1-outline": { "name": "Circle 1 Outline", "category": "numbers", "keywords": ["1", "one", "number", "circle", "outline"] },
+    "circle-2-outline": { "name": "Circle 2 Outline", "category": "numbers", "keywords": ["2", "two", "number", "circle", "outline"] },
+    "circle-3-outline": { "name": "Circle 3 Outline", "category": "numbers", "keywords": ["3", "three", "number", "circle", "outline"] },
+    "circle-4-outline": { "name": "Circle 4 Outline", "category": "numbers", "keywords": ["4", "four", "number", "circle", "outline"] },
+    "circle-5-outline": { "name": "Circle 5 Outline", "category": "numbers", "keywords": ["5", "five", "number", "circle", "outline"] },
+    "circle-6-outline": { "name": "Circle 6 Outline", "category": "numbers", "keywords": ["6", "six", "number", "circle", "outline"] },
+    "circle-7-outline": { "name": "Circle 7 Outline", "category": "numbers", "keywords": ["7", "seven", "number", "circle", "outline"] },
+    "circle-8-outline": { "name": "Circle 8 Outline", "category": "numbers", "keywords": ["8", "eight", "number", "circle", "outline"] },
+    "circle-9-outline": { "name": "Circle 9 Outline", "category": "numbers", "keywords": ["9", "nine", "number", "circle", "outline"] },
+    "circle-0-outline": { "name": "Circle 0 Outline", "category": "numbers", "keywords": ["0", "zero", "number", "circle", "outline"] },
+
+    "squircle-1-outline": { "name": "Squircle 1 Outline", "category": "numbers", "keywords": ["1", "one", "number", "squircle", "outline"] },
+    "squircle-2-outline": { "name": "Squircle 2 Outline", "category": "numbers", "keywords": ["2", "two", "number", "squircle", "outline"] },
+    "squircle-3-outline": { "name": "Squircle 3 Outline", "category": "numbers", "keywords": ["3", "three", "number", "squircle", "outline"] },
+    "squircle-4-outline": { "name": "Squircle 4 Outline", "category": "numbers", "keywords": ["4", "four", "number", "squircle", "outline"] },
+    "squircle-5-outline": { "name": "Squircle 5 Outline", "category": "numbers", "keywords": ["5", "five", "number", "squircle", "outline"] },
+    "squircle-6-outline": { "name": "Squircle 6 Outline", "category": "numbers", "keywords": ["6", "six", "number", "squircle", "outline"] },
+    "squircle-7-outline": { "name": "Squircle 7 Outline", "category": "numbers", "keywords": ["7", "seven", "number", "squircle", "outline"] },
+    "squircle-8-outline": { "name": "Squircle 8 Outline", "category": "numbers", "keywords": ["8", "eight", "number", "squircle", "outline"] },
+    "squircle-9-outline": { "name": "Squircle 9 Outline", "category": "numbers", "keywords": ["9", "nine", "number", "squircle", "outline"] },
+    "squircle-0-outline": { "name": "Squircle 0 Outline", "category": "numbers", "keywords": ["0", "zero", "number", "squircle", "outline"] },
+
+    "dollar-sign": {
+      "name": "Dollar Sign",
+      "category": "finance",
+      "keywords": ["dollar", "money", "currency", "usd", "finance"]
+    },
+    "euro": {
+      "name": "Euro",
+      "category": "finance",
+      "keywords": ["euro", "money", "currency", "eur", "finance"]
+    },
+    "pound-sterling": {
+      "name": "Pound Sterling",
+      "category": "finance",
+      "keywords": ["pound", "sterling", "money", "currency", "gbp", "finance"]
+    },
+    "bitcoin": {
+      "name": "Bitcoin",
+      "category": "finance",
+      "keywords": ["bitcoin", "btc", "crypto", "cryptocurrency", "finance"]
+    },
+
+    "plus": {
+      "name": "Plus",
+      "category": "math",
+      "keywords": ["plus", "add", "addition", "math", "positive"]
+    },
+    "minus": {
+      "name": "Minus",
+      "category": "math",
+      "keywords": ["minus", "subtract", "subtraction", "math", "negative", "dash", "line"]
+    },
+    "equal": {
+      "name": "Equal",
+      "category": "math",
+      "keywords": ["equal", "equals", "math"]
+    },
+    "divide": {
+      "name": "Divide",
+      "category": "math",
+      "keywords": ["divide", "division", "math", "obelus"]
+    },
+    "asterisk": {
+      "name": "Asterisk",
+      "category": "math",
+      "keywords": ["asterisk", "star", "multiply", "math"]
+    },
+    "percent": {
+      "name": "Percent",
+      "category": "math",
+      "keywords": ["percent", "percentage", "discount", "math"]
+    },
+    
+    "parenthesis-left": {
+      "name": "Parenthesis Left",
+      "category": "brackets",
+      "keywords": ["parenthesis", "bracket", "left", "open"]
+    },
+    "parenthesis-right": {
+      "name": "Parenthesis Right",
+      "category": "brackets",
+      "keywords": ["parenthesis", "bracket", "right", "close"]
+    },
+    "parentheses": {
+      "name": "Parentheses",
+      "category": "brackets",
+      "keywords": ["parentheses", "brackets", "pair"]
+    },
+    "bracket-left": {
+      "name": "Bracket Left",
+      "category": "brackets",
+      "keywords": ["bracket", "square", "left", "open"]
+    },
+    "bracket-right": {
+      "name": "Bracket Right",
+      "category": "brackets",
+      "keywords": ["bracket", "square", "right", "close"]
+    },
+    "brackets": {
+      "name": "Brackets",
+      "category": "brackets",
+      "keywords": ["brackets", "square", "pair"]
+    },
+    "brace-left": {
+      "name": "Brace Left",
+      "category": "brackets",
+      "keywords": ["brace", "curly", "left", "open"]
+    },
+    "brace-right": {
+      "name": "Brace Right",
+      "category": "brackets",
+      "keywords": ["brace", "curly", "right", "close"]
+    },
+    "braces": {
+      "name": "Braces",
+      "category": "brackets",
+      "keywords": ["braces", "curly", "pair"]
+    },
+
+    "ampersand": {
+      "name": "Ampersand",
+      "category": "symbols",
+      "keywords": ["ampersand", "and", "symbol"]
+    },
+    "at-sign": {
+      "name": "At Sign",
+      "category": "symbols",
+      "keywords": ["at", "email", "symbol"]
+    },
+    "hash": {
+      "name": "Hash",
+      "category": "symbols",
+      "keywords": ["hash", "pound", "number", "hashtag", "symbol"]
+    },
+    "command": {
+      "name": "Command",
+      "category": "symbols",
+      "keywords": ["command", "cmd", "mac", "apple", "symbol"]
+    },
+    "block": {
+      "name": "Block",
+      "category": "separators",
+      "keywords": ["block", "fill", "solid", "square", "full", "filled", "separator"]
+    },
+    "space": {
+      "name": "Space",
+      "category": "separators",
+      "keywords": ["space", "blank", "empty", "spacer", "gap", "invisible", "separator"],
+      "colorless": true
+    }
+  }
+}

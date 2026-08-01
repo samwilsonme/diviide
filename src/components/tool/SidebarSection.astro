@@ -1,0 +1,20 @@
+---
+// Shared chrome for a flat sidebar section: monospace title on the left, an
+// optional `action` slot on the right, then the section body. Sections read as
+// one rail separated by hairline rules, matching the site's guide sidebars.
+// Spacing is flex gap (not margins) so hidden children — like the label field
+// and Advanced disclosure while the toggle is off — leave no phantom space
+// between the heading and the rule.
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<section class="flex flex-col gap-3 border-b pb-5 last:border-b-0 last:pb-0">
+  <div class="flex items-center justify-between gap-2">
+    <h2 class="font-mono text-2xs font-medium text-muted-foreground/80">{title}</h2>
+    <slot name="action" />
+  </div>
+  <slot />
+</section>

@@ -1,0 +1,41 @@
+---
+import { textField } from './fieldClasses';
+import Lucide from '../icons/Lucide.astro';
+
+interface Props {
+  /** Total number of separators, for the placeholder copy. */
+  separatorCount: number;
+}
+const { separatorCount } = Astro.props;
+---
+
+<div class="relative">
+  <Lucide
+    name="search"
+    class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+  />
+  <input
+    type="text"
+    data-search-input
+    autocomplete="off"
+    aria-label="Search separators"
+    placeholder={`Search ${separatorCount} separators…`}
+    class:list={[textField, 'pr-9 pl-9']}
+  />
+  <button
+    type="button"
+    data-search-clear
+    hidden
+    class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+  >
+    <Lucide name="x" class="h-4 w-4" />
+    <span class="sr-only">Clear search</span>
+  </button>
+  <kbd
+    data-search-kbd
+    aria-hidden="true"
+    class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 rounded border bg-muted px-1.5 py-0.5 text-xs text-muted-foreground select-none"
+  >
+    /
+  </kbd>
+</div>

@@ -1,0 +1,387 @@
+/*
+ * Diviide design system: theme tokens, base layer, utilities, and keyframes.
+ * Split out of global.css so it can be imported on its own — the private site
+ * pulls this in AFTER its own `@import 'tailwindcss'` to reuse the exact theme
+ * without re-importing the Tailwind engine. Requires Tailwind to be imported
+ * first (it uses @custom-variant / @theme / @utility / @apply).
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * The canvas. Unlayered on purpose: these must beat utilities, since the page
+ * background and the scrollbar suppression are structural rather than something
+ * a class should be able to override by accident. (The `bg-background` default
+ * lives in @layer base further down, where a utility CAN override it.)
+ */
+html {
+  scroll-behavior: smooth;
+  /* Let full-bleed sections (e.g. the home hero) use w-screen without adding a
+     horizontal scrollbar. `clip` doesn't create a scroll container, so sticky
+     positioning keeps working. */
+  overflow-x: clip;
+  /* Hide the page scrollbar at every width (phones always did; desktop now
+     matches). No scrollbar means no reserved gutter either, so every page shares
+     the same full-viewport layout box - the tool page (scroll locked at md+) and
+     the scrolling pages line up on the same right bound, and the chrome borders
+     run edge to edge. Same recipe as the no-scrollbar utility below, which the
+     tool's panes use; spelled out here because a utility cannot apply to the
+     element that owns the page. */
+  scrollbar-width: none; /* Firefox */
+
+  /* On split pages the CANVAS carries the card tone and SplitBackdrop paints the
+     sidebar side, so body and Base's wrapper stay background-free and the -z-10
+     split layers show through. Keyed off the split layers every split page
+     renders. A consumer that fades its split in (the site's homepage) overrides
+     this on :root with higher specificity and takes the canvas over once the
+     split assembles. */
+  &:has(.split-boundary, .split-sidebar-boundary) {
+    background-color: var(--card);
+  }
+
+  &::-webkit-scrollbar {
+    display: none; /* WebKit (Safari/Chrome) */
+  }
+}
+
+/*
+ * Neutral grays are derived from the v8 design (sRGB hex -> oklch). Surfaces are
+ * intentionally off-pure so a pure-white/black icon still reads against them.
+ * --accent-live is the single live accent: it defaults to the brand teal and
+ * is overwritten at runtime with the selected separator color (see applyColor
+ * in src/tool/main.ts and the pre-paint bootstrap).
+ */
+:root {
+  --background: oklch(0.908 0.0013 286.37); /* #E0E0E1 */
+  --foreground: oklch(0.2099 0.0039 286.06); /* #18181A */
+  --card: oklch(0.9283 0.0013 286.37); /* #E7E7E8 */
+  --popover: oklch(0.9584 0.0013 286.37);
+  --popover-foreground: oklch(0.2099 0.0039 286.06);
+  --muted: oklch(0.9373 0.0013 286.37);
+  --muted-foreground: oklch(0.5088 0.0094 286.06); /* #65656B */
+  --accent: oklch(0.9373 0.0013 286.37);
+  --accent-foreground: oklch(0.2099 0.0039 286.06);
+  --destructive: oklch(0.577 0.245 27.325);
+  --warning: oklch(0.68 0.16 65); /* amber; e.g. the label fit meter */
+  /* Structure colors sit between the surfaces (~0.91-0.93 L) and the muted
+     text (0.51 L): dark enough to read as lines on either split tone, still
+     far lighter than any type so they never compete with it. */
+  --border: oklch(0.87 0.0027 286.35); /* #D4D4D6 */
+  --input: oklch(0.82 0.0041 286.31); /* #C4C4C7 */
+  /* Brand teal fallback, matching --icon-color below and DEFAULT_COLOR_HEX in
+     src/lib/colors.ts. It is only ever seen when the pre-paint bootstrap does not
+     run (JS off, or a bootstrap failure) — and it used to be violet, so that case
+     painted violet accents around teal icons. config-integrity.test.ts pins both
+     literals to the palette now. Overwritten by the selected color at runtime. */
+  --accent-live: #14b8a6;
+  /*
+   * The accent as INK, for anything the accent has to COLOR TEXT with.
+   *
+   * --accent-live is the visitor's chosen separator color. It is picked to look
+   * good as a shape, not to be legible as small type, and on this light canvas
+   * most of the palette fails WCAG AA badly as body text: the default teal reads
+   * 2.0:1 against --card and yellow 1.6:1, against a 4.5:1 requirement. Inline
+   * links in every guide are accent-colored, so that was most of the site's prose
+   * links sitting below AA whenever a visitor used the light theme.
+   *
+   * 40% is the smallest darkening that clears AA for the WHOLE palette with
+   * margin (it takes the worst color, yellow, to 5.4:1); 35% only scrapes 4.5:1.
+   * Measured against the real palette, not eyeballed.
+   *
+   * The dark theme needs no correction — every palette color is already 5.6:1 to
+   * 10:1 there — so `.dark` below sets this straight back to --accent-live and
+   * dark-mode rendering is untouched.
+   */
+  --accent-ink: color-mix(in oklab, var(--accent-live), black 40%);
+  /* Live separator color used to paint the masked icon grids (the tool's grid
+     and recent tiles). Unlike --accent-live this is the *raw* selected color
+     (black and white render literally), overwritten at runtime by applyColor. */
+  --icon-color: #14b8a6; /* brand teal fallback; overwritten by selected color */
+  --ring: var(--accent-live);
+  --radius: 0.625rem;
+  /* Dot-grid texture color (hero + decorated section bands). Tracks --foreground
+     so it flips with the theme; light surfaces need a higher mix to stay visible
+     against the off-white background. */
+  --dot: color-mix(in srgb, var(--foreground) 24%, transparent);
+
+  /* The split shell's reveal timing. Referenced only through var() in CSS (never
+     as a utility), so it lives here rather than in @theme. Shared with the
+     consuming site's homepage assembly, which wrote the easing out four times and
+     the duration six. */
+  --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-reveal: 0.6s;
+}
+
+.dark {
+  --background: oklch(0.1642 0.0021 286.17); /* #0E0E0F */
+  --foreground: oklch(0.9557 0.0027 286.35); /* #F0F0F2 */
+  --card: oklch(0.2532 0.0056 285.99); /* #222225 */
+  --popover: oklch(0.2532 0.0056 285.99);
+  --popover-foreground: oklch(0.9557 0.0027 286.35);
+  --muted: oklch(0.2143 0.0039 286.07);
+  --muted-foreground: oklch(0.672 0.0102 286.12); /* #95959C */
+  --accent: oklch(0.2143 0.0039 286.07);
+  --accent-foreground: oklch(0.9557 0.0027 286.35);
+  --destructive: oklch(0.704 0.191 22.216);
+  --warning: oklch(0.78 0.15 70); /* amber; e.g. the label fit meter */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 16%);
+  --dot: color-mix(in srgb, var(--foreground) 16%, transparent);
+  /* No correction needed on dark: every palette color already clears AA against
+     this background (5.6:1 for the worst, fuchsia, up to 10:1). See the note on
+     --accent-ink in :root — darkening here would only make the accent muddy. */
+  --accent-ink: var(--accent-live);
+}
+
+@theme inline {
+  /* Set by the <Font /> components in Base.astro; each variable already
+     carries the family plus Astro's generated fallback stack. */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-live: var(--accent-live);
+  /* `text-accent-ink` — the accent for TEXT. Use this anywhere the accent colors
+     type or a glyph; keep --color-accent-live for fills, borders and rings, where
+     the raw chosen color is the point. See --accent-ink above. */
+  --color-accent-ink: var(--accent-ink);
+  --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  /* Used only by the `outline-ring/50` baseline in @layer base below, not by any
+     markup — but that baseline needs the theme color to exist. */
+  --color-ring: var(--ring);
+
+  /* Ink for text on --accent-live. White, NOT --primary-foreground: --accent-live
+     is the user's chosen separator color rather than a theme surface, so this must
+     not flip with light/dark. Named so the contrast question against a very pale
+     chosen color is at least visible in the code. */
+  --color-on-accent: #fff;
+
+  /* Chrome geometry, replacing literals that appeared across seven files in five
+     different arithmetic forms (h-[60px], pt-[88px], calc(100dvh-120px), top-22).
+     --spacing-* feeds Tailwind's spacing scale, so these work as h-header /
+     h-footer / w-sidebar and inside calc() alike. */
+  --spacing-header: 60px;
+  --spacing-footer: 42px;
+  --spacing-sidebar: 18rem;
+
+  /* One step below Tailwind's text-xs (12px), for the mono chrome labels and the
+     sidebar's dense captions. Those were 11px and 10px respectively — a 1px split
+     by role that read as two sizes without looking like a deliberate scale, so
+     they are now one step. */
+  --text-2xs: 11px;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* The page background lives on html, NOT body, and body must never paint
+     one of its own: the -z-10 split layers (SplitBackdrop, the header/footer
+     bands) paint above the canvas but below in-flow backgrounds, so a
+     background on body would sit on top of them and erase the split. The
+     html:has(.split-boundary) rule above swaps the canvas to card on split
+     pages. */
+  html {
+    @apply bg-background;
+  }
+  body {
+    @apply text-foreground;
+  }
+  /* The mono font is used purely as a label/chrome typeface (kickers, nav,
+     footer, counters, badges, key caps), so it is always uppercased. Opt out
+     with `normal-case` for verbatim content set in mono (e.g. license bodies). */
+  .font-mono {
+    text-transform: uppercase;
+  }
+
+  /*
+   * Keyboard focus, once, for every interactive control in both repos: links,
+   * buttons, <summary>, and anything given a tabindex or a slider role. Applied
+   * here rather than as a class on each control because there were five different
+   * treatments in circulation and a consuming site had none at all — every button
+   * and link there showed only the faint `outline-ring/50` above. A base-layer rule
+   * covers new markup by default, and any utility still overrides it.
+   *
+   * The selector is deliberately exhaustive rather than an opt-in class: an element
+   * cannot take keyboard focus without being one of these tags or carrying a
+   * tabindex, so there is nothing left for a class to reach. (There was a
+   * `focus-ring` utility here holding a second, byte-identical copy of this recipe.
+   * Its single caller was the saturation square, which already matches
+   * [role='slider'] above — so "one focus recipe" was in fact two.)
+   *
+   * Fields are excluded on purpose: inputs and selects signal focus by swapping
+   * their border to the accent (fieldClasses.ts), which is the conventional
+   * treatment, and a ring on top of that reads as double emphasis. The offset
+   * would also be clipped by the sidebar's overflow-hidden panes.
+   *
+   * The outline is the live accent, i.e. the visitor's chosen separator color, so
+   * it carries a companion shadow: a very pale choice (or pure white) would
+   * otherwise leave the ring almost invisible against a light surface. A control
+   * that sets its own `shadow-*` utility overrides that companion — today only the
+   * site's modal close button, which carries `ring-1 ring-border` and so stays
+   * legible regardless.
+   */
+  :is(a[href], button, summary, [role='slider'], [tabindex]):not(:disabled):focus-visible {
+    outline: 2px solid var(--accent-live);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 45%, transparent);
+  }
+}
+
+/*
+ * The split-shell column boundary's x offset: the centered max-w-7xl container's
+ * left edge (max(50% - 40rem, 0)) + px-4 (1rem) + the sidebar column + half of
+ * gap-10 (1.25rem). One custom property feeds the split-boundary and
+ * split-sidebar-boundary utilities so the boundary can never drift between the
+ * layers that share it — and it is now computed FROM --spacing-sidebar, so it
+ * cannot drift from the grids it aligns to either (that used to be a comment
+ * asking whoever changed one number to remember the other).
+ *
+ * The 50% term resolves against each user's own reference box, and the formula
+ * lands on the same visual x from either the full-width wrapper or the centered
+ * container. Below md the shell collapses to a single column and the sidebar moves
+ * into the drawer, so the boundary sits at the viewport's left edge: the card tone
+ * spans the full width and the content keeps the same surface at every width. A
+ * consumer whose shell collapses at a later breakpoint overrides the property on
+ * html for the widths in between.
+ */
+:root {
+  --split-boundary-x: 0px;
+}
+@media (min-width: 48rem) {
+  :root {
+    --split-boundary-x: calc(max(50% - 40rem, 0px) + var(--spacing-sidebar) + 2.25rem);
+  }
+}
+
+/* The boundary as a left offset: the card-toned layers (the header/footer
+   split bands) start here and run to the viewport's right edge. */
+@utility split-boundary {
+  left: var(--split-boundary-x);
+}
+
+/* The boundary as a right offset: the sidebar-toned layer (SplitBackdrop)
+   runs from the viewport's left edge and ends here. Below md the boundary is
+   0, so the layer collapses to nothing and the card canvas spans full width. */
+@utility split-sidebar-boundary {
+  right: calc(100% - var(--split-boundary-x));
+}
+
+/*
+ * The sidebar column's right edge (container left edge + px-4 + the sidebar
+ * column), as a right offset on the same full-width ancestors. The chrome
+ * bars' sidebar-side border segment ends here, so the bar border visibly
+ * breaks across the gap before the content column's border starts.
+ *
+ * Computed from --spacing-sidebar like --split-boundary-x above, rather than the
+ * 19rem literal this used to hold: that was the one number in the split geometry
+ * still able to drift from the grids it aligns to.
+ */
+@utility split-sidebar-end {
+  right: calc(100% - max(50% - 40rem, 0px) - (var(--spacing-sidebar) + 1rem));
+}
+
+/*
+ * Full-bleed escape: break a block element out of its centered container to the
+ * viewport edges. A negative inline margin is enough on its own — the element
+ * then fills the width it is given — so this needs no companion w-screen.
+ *
+ * Scope note, because an earlier comment here overstated it: this does NOT
+ * replace the `left-[calc(50%_-_50vw)]` / `right-[calc(50%_-_50vw)]` offsets in
+ * SplitBackdrop and Header. Those position absolutely-placed layers, which is a
+ * different mechanism from margin, and swapping one for the other would move
+ * them. The one caller is the consuming site's full-bleed page hero.
+ */
+@utility bleed-x {
+  margin-inline: calc(50% - 50vw);
+}
+
+/* The hue bar's spectrum (the Advanced color picker). Static, and the only place
+   raw #rgb literals appeared in any markup. */
+@utility hue-bar {
+  background: linear-gradient(
+    to right,
+    #f00 0%,
+    #ff0 17%,
+    #0f0 33%,
+    #0ff 50%,
+    #00f 67%,
+    #f0f 83%,
+    #f00 100%
+  );
+}
+
+/* Scrollable but with no visible scrollbar (used by the Separators app panes). */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/*
+ * A separator/shape icon painted as a CSS mask from a color variable, instead
+ * of an <img> per color file. The mask (--mask-url, set inline per tile) is an
+ * SVG data: URI built from the icon's source template (see lib/svgDataUri.ts),
+ * so painting a shape costs no network request, and re-tinting is a pure
+ * repaint: a single write to --icon-color recolors every separator at once,
+ * with no image reloads. Override --separator-color to paint a single separator
+ * independently of the live selection.
+ */
+@utility separator {
+  display: inline-block;
+  background-color: var(--separator-color, var(--icon-color));
+  mask-image: var(--mask-url);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+/*
+ * Toast entrance: fade up into place. Replaces the tw-animate-css dependency,
+ * whose entire contribution to the built CSS was this one effect (a consuming
+ * site's bottom-right toasts) plus two unused keyframe sets and a dozen custom
+ * property registrations. Motion-gated: a reduced-motion visitor gets the toast
+ * immediately rather than a slide.
+ */
+@utility toast-in {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: toast-in 200ms ease-out;
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gentle "pick me up" bob for the Try-it-now draggable separator + its cue. */
+@keyframes separator-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}

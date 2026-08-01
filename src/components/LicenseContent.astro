@@ -1,0 +1,100 @@
+---
+// The license page body (MIT + Lucide ISC attribution), extracted so the
+// private site can render the identical content inside its own shell.
+import { LICENSE_UPDATED } from '../content/license';
+
+interface Props {
+  /**
+   * Render the component's own page shell: the centered wrapper, the h1, and
+   * the "Last updated" line. Default true, so this repo's /license/ page is
+   * unchanged; the private site passes false to compose the bare sections
+   * inside its own article layout (which supplies its own title and date).
+   */
+  standalone?: boolean;
+}
+const { standalone = true } = Astro.props;
+
+const mit = `Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`;
+
+const isc = `ISC License
+
+Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2026 as part
+of Feather (MIT). All other copyright (c) for Lucide are held by Lucide
+Contributors 2026.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.`;
+---
+
+{
+  /* Embedded, the consumer's vertical rhythm is space-y-8; standalone keeps the
+    original per-section mb-8 so the rendered page is identical to before. */
+}
+<div class:list={standalone ? 'mx-auto max-w-3xl px-4 py-8' : 'space-y-8'}>
+  {standalone && <h1 class="mb-6 text-3xl font-bold">License</h1>}
+
+  <section class:list={[standalone && 'mb-8']}>
+    <h2 class="mb-3 text-xl font-semibold">MIT License</h2>
+
+    <p class="mb-3 leading-relaxed text-muted-foreground">Copyright (c) 2026 Sam Wilson</p>
+
+    <div
+      class="rounded-lg bg-muted/50 p-6 font-mono text-sm whitespace-pre-wrap normal-case text-muted-foreground"
+    >
+      {mit}
+    </div>
+  </section>
+
+  <section class:list={[standalone && 'mb-8']}>
+    <h2 class="mb-3 text-xl font-semibold">Icon Attribution</h2>
+    <p class="mb-3 leading-relaxed text-muted-foreground">
+      This product includes icons from{' '}
+      <a
+        href="https://lucide.dev"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-accent-ink hover:underline"
+      >
+        Lucide
+      </a>, used and modified under the terms of the ISC License reproduced below.
+    </p>
+
+    <div
+      class="rounded-lg bg-muted/50 p-6 font-mono text-sm whitespace-pre-wrap normal-case text-muted-foreground"
+    >
+      {isc}
+    </div>
+
+    <p class="mt-4 leading-relaxed text-muted-foreground">
+      Feel free to use the generated separator icons in your bookmarks bar for personal and
+      commercial purposes.
+    </p>
+  </section>
+
+  {standalone && <p class="text-sm text-muted-foreground">Last updated {LICENSE_UPDATED}.</p>}
+</div>

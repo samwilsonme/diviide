@@ -1,0 +1,155 @@
+---
+// Sticky top bar. The standalone tool ships no inline nav links: its root
+// renders the tool itself (never a redirect — see src/pages/index.astro), so a
+// Separators link would just point at the page you're already on. A consuming
+// site supplies its own links (and its own logo via the `logo` slot) without
+// editing this file.
+//
+// `withMenu` renders the mobile hamburger + drawer that surfaces a page's
+// sidebar on small screens. The drawer itself is dumb: the page's script moves
+// its single sidebar node into [data-drawer-slot] on open and back on close
+// (the tool does this in src/tool/main.ts with [data-sidebar]), so there is one
+// sidebar and no state to sync. `menuTitle` names the drawer for that page;
+// the default keeps the tool's "Settings".
+import Logo from './Logo.astro';
+import Lucide from './icons/Lucide.astro';
+import { isActivePath } from '../lib/routes';
+
+export interface HeaderNavLink {
+  to: string;
+  label: string;
+}
+
+interface Props {
+  navLinks?: HeaderNavLink[];
+  withMenu?: boolean;
+  menuTitle?: string;
+  /**
+   * Continue a SplitBackdrop page's two-tone column split through the bar: the
+   * content side gets a bg-card band, and the full-width bottom border becomes
+   * two segments — one per column — with a break across the gap between them.
+   */
+  split?: boolean;
+}
+const { navLinks = [], withMenu = false, menuTitle = 'Settings', split = false } = Astro.props;
+const currentPath = Astro.url.pathname;
+const isActive = (to: string) => isActivePath(currentPath, to);
+---
+
+<header
+  class:list={[
+    'sticky top-0 z-50 w-full bg-background',
+    split ? 'border-b md:border-b-0' : 'border-b',
+  ]}
+>
+  {
+    split && (
+      <>
+        <div
+          aria-hidden="true"
+          class="split-boundary pointer-events-none absolute inset-y-0 right-0 -z-10 bg-card md:border-b"
+        />
+        <div
+          aria-hidden="true"
+          class="split-sidebar-end pointer-events-none absolute inset-y-0 left-0 -z-10 hidden border-b md:block"
+        />
+      </>
+    )
+  }
+  <div class="mx-auto flex h-header max-w-7xl items-center gap-3 px-4">
+    {
+      withMenu && (
+        <button
+          type="button"
+          data-menu-open
+          class="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground md:hidden"
+        >
+          <Lucide name="menu" class="h-5 w-5" />
+          <span class="sr-only">Open menu</span>
+        </button>
+      )
+    }
+
+    <a href="/" class="mr-auto">
+      <slot name="logo"><Logo /></slot>
+    </a>
+
+    <nav aria-label="Primary" class="flex items-center gap-1.5">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.to}
+            aria-current={isActive(link.to) ? 'page' : undefined}
+            class:list={[
+              'rounded-md px-2.5 py-1.5 font-mono text-xs font-medium transition-colors',
+              isActive(link.to)
+                ? 'bg-foreground/[0.06] text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
+            ]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <button
+      type="button"
+      data-theme-toggle
+      aria-label="Toggle theme"
+      class="relative inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+    >
+      <Lucide
+        name="sun"
+        class="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
+      />
+      <Lucide
+        name="moon"
+        class="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
+      />
+      <span class="sr-only">Toggle theme</span>
+    </button>
+  </div>
+</header>
+
+<script>
+  import { STORAGE_KEYS, writeString } from '../lib/storage';
+
+  // Theme toggle wiring lives with the header (present on every page), not in
+  // the tool runtime: class on <html>, persisted under STORAGE_KEYS.theme, and
+  // the browser-chrome color re-synced from the real --background token
+  // (readable here because the stylesheet is loaded; the pre-paint bootstrap
+  // seeds it with a literal before any CSS exists).
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.classList.contains('dark') ? 'light' : 'dark';
+    root.classList.remove('light', 'dark');
+    root.classList.add(next);
+    writeString(STORAGE_KEYS.theme, next);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    const bg = getComputedStyle(root).getPropertyValue('--background').trim();
+    if (meta && bg) meta.setAttribute('content', bg);
+  });
+</script>
+
+{
+  withMenu && (
+    <dialog
+      data-menu
+      class="fixed m-0 h-dvh max-h-none w-80 max-w-[calc(100%-3rem)] overflow-y-auto border-r bg-background p-4 text-foreground backdrop:bg-black/50"
+    >
+      <div class="flex items-center justify-between gap-2">
+        <h2 class="text-lg font-semibold">{menuTitle}</h2>
+        <button
+          type="button"
+          data-menu-close
+          aria-label="Close menu"
+          class="rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <Lucide name="x" class="h-4 w-4" />
+        </button>
+      </div>
+      <div class="mt-4" data-drawer-slot />
+    </dialog>
+  )
+}

@@ -1,0 +1,163 @@
+---
+import SidebarSection from './SidebarSection.astro';
+import AdvancedDisclosure from './AdvancedDisclosure.astro';
+import Lucide from '../icons/Lucide.astro';
+import { capitalize } from '../../lib/utils';
+import { DEFAULT_COLOR_HEX } from '../../lib/colors';
+import { numInput, fieldCaption, selectField, pickerThumb } from './fieldClasses';
+
+interface Props {
+  colors: Record<string, string>;
+  /**
+   * Render the Advanced (HSV wheel + numeric fields) disclosure. Consumer seam:
+   * a surface that only wants the preset swatches — e.g. a marketing page reusing
+   * this exact markup so a View Transition can morph it into the real sidebar —
+   * passes false instead of hiding the disclosure with its own CSS. Defaults to
+   * true, so the tool itself is unchanged.
+   */
+  showAdvanced?: boolean;
+}
+const { colors, showAdvanced = true } = Astro.props;
+// HSL field metadata: [data-key, caption, max].
+const HSL_FIELDS = [
+  ['h', 'H', 360],
+  ['s', 'S', 100],
+  ['l', 'L', 100],
+] as const;
+---
+
+<SidebarSection title="Color">
+  <div class="grid grid-cols-9 gap-2">
+    {
+      Object.entries(colors).map(([name, hex]) => (
+        <button
+          type="button"
+          data-swatch
+          data-hex={hex}
+          title={capitalize(name)}
+          aria-pressed="false"
+          class="aspect-square w-full rounded-md border transition-transform not-aria-pressed:hover:scale-110 aria-pressed:scale-105 aria-pressed:border-foreground!"
+          style={`background-color:${hex};border-color:${hex}`}
+        >
+          <span class="sr-only">{name}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    /* Advanced: an inline saturation/value square + hue bar + hex/RGB fields for
+      any color (gradients, thumbs, and fields are wired by src/tool/colorPicker.ts). */
+  }
+  {
+    showAdvanced && (
+      <AdvancedDisclosure>
+        {/* saturation (x) / brightness (y) square — background painted by JS from the hue */}
+        <div
+          data-sv
+          role="slider"
+          tabindex="0"
+          aria-label="Saturation and brightness"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          class="relative aspect-[4/3] w-full touch-none rounded-md"
+        >
+          <span
+            data-sv-thumb
+            class:list={['h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2', pickerThumb]}
+          />
+        </div>
+        {/* hue bar */}
+        <div
+          data-hue
+          role="slider"
+          tabindex="0"
+          aria-label="Hue"
+          aria-valuemin="0"
+          aria-valuemax="360"
+          class="hue-bar relative h-3 w-full touch-none rounded-full"
+        >
+          <span
+            data-hue-thumb
+            class:list={['top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2', pickerThumb]}
+          />
+        </div>
+        {/* numeric fields (HEX / RGB / HSL) with the format switch on the right */}
+        <div class="flex items-start gap-2">
+          <div class="min-w-0 flex-1">
+            {/* HEX: type/paste any hex, rgb(), or hsl() */}
+            <div data-format-fields="hex">
+              <input
+                type="text"
+                data-color-hex
+                spellcheck="false"
+                autocomplete="off"
+                placeholder={DEFAULT_COLOR_HEX}
+                aria-label="Hex, rgb, or hsl color"
+                class="h-8 w-full rounded-md border border-input bg-transparent px-2.5 font-mono text-xs focus-visible:border-accent-live focus-visible:outline-none"
+              />
+            </div>
+
+            {/* RGB */}
+            <div data-format-fields="rgb" hidden class="grid grid-cols-3 gap-2">
+              {(['r', 'g', 'b'] as const).map((ch) => (
+                <label class="flex flex-col items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="255"
+                    {...{ [`data-rgb-${ch}`]: true }}
+                    aria-label={`${ch.toUpperCase()} 0 to 255`}
+                    class={numInput}
+                  />
+                  <span class={fieldCaption}>{ch.toUpperCase()}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* HSL */}
+            <div data-format-fields="hsl" hidden class="grid grid-cols-3 gap-2">
+              {HSL_FIELDS.map(([key, label, max]) => (
+                <label class="flex flex-col items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max={max}
+                    {...{ [`data-hsl-${key}`]: true }}
+                    aria-label={`${label} 0 to ${max}`}
+                    class={numInput}
+                  />
+                  <span class={fieldCaption}>{label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* eyedropper: pick from anywhere on screen. Chromium-only, so it ships
+            hidden and src/tool/colorPicker.ts unhides it where the API exists. */}
+          <button
+            type="button"
+            data-eyedropper
+            hidden
+            title="Pick a color from your screen"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-input text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Lucide name="pipette" class="h-4 w-4" />
+            <span class="sr-only">Pick a color from your screen</span>
+          </button>
+
+          {/* format switch, right of the values */}
+          <select
+            data-color-format
+            aria-label="Color format"
+            class:list={['shrink-0', selectField]}
+          >
+            <option value="hex">HEX</option>
+            <option value="rgb">RGB</option>
+            <option value="hsl">HSL</option>
+          </select>
+        </div>
+      </AdvancedDisclosure>
+    )
+  }
+</SidebarSection>

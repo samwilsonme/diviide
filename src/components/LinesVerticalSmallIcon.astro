@@ -1,0 +1,24 @@
+---
+// The lines-vertical-small separator glyph as an inline SVG, for chrome surfaces
+// (footer tagline) that want the brand separator at text size. The path data
+// mirrors assets/icons/lines-vertical-small.svg (inlined here because these
+// surfaces tint via currentColor, not the mask pipeline) — keep them in sync.
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  class={className}
+>
+  <path d="M15 5L15 19"></path>
+  <path d="M9 5L9 19"></path>
+</svg>

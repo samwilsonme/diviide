@@ -1,0 +1,16 @@
+---
+// The root serves the tool itself — the standalone tool's "homepage" IS the
+// separator tool, rendered as one page on two routes. The page's canonical
+// points at /separators/, the tool's true home and the path every bookmark URL
+// uses, so search engines see a single page.
+//
+// This MUST stay a real render, never a redirect: Chrome attributes favicon
+// updates from a client-redirected document to every same-document URL the
+// page passes through, so a meta-refresh here let the live color re-tint
+// overwrite freshly dragged bookmarks' frozen favicons (verified against
+// Chrome's Favicons DB). Server redirects (e.g. a host's trailing-slash 301)
+// are unaffected. The private site replaces this route with its homepage.
+import SeparatorsPage from './separators/index.astro';
+---
+
+<SeparatorsPage />

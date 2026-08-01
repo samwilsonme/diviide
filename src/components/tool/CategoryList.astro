@@ -1,0 +1,64 @@
+---
+// Category rail: the config-driven categories, then a pinned "Recently used"
+// pseudo-category last (runtime state, deliberately not a config.json
+// category — see the guard in config-integrity.test.ts). main.ts keeps the
+// recents count live and shows the Clear action only in the recents view.
+import SidebarSection from './SidebarSection.astro';
+import type { Config } from '../../types';
+import { computeCategoryCounts } from '../../lib/icons';
+import { RAIL_BUTTON_CLASS } from '../../lib/railClasses';
+
+interface Props {
+  config: Config;
+}
+const { config } = Astro.props;
+const counts = computeCategoryCounts(config);
+
+const nameClasses =
+  'text-muted-foreground transition-colors group-hover:text-foreground group-aria-pressed:font-medium group-aria-pressed:text-foreground';
+const countClasses =
+  'font-mono text-xs tabular-nums text-muted-foreground/80 group-aria-pressed:text-muted-foreground';
+---
+
+<SidebarSection title="Category">
+  <button
+    slot="action"
+    type="button"
+    data-recent-clear
+    hidden
+    aria-label="Clear recent separators"
+    class="font-mono text-2xs text-muted-foreground transition-colors hover:text-foreground"
+  >
+    Clear
+  </button>
+  <div class="flex flex-col">
+    {
+      Object.entries(config.categories).map(([categoryId, categoryName]) => (
+        <button
+          type="button"
+          data-category-btn
+          data-category={categoryId}
+          aria-pressed={categoryId === 'all' ? 'true' : 'false'}
+          class={RAIL_BUTTON_CLASS}
+        >
+          <span class={nameClasses}>{categoryName}</span>
+          <span class={countClasses}>{counts[categoryId] || 0}</span>
+        </button>
+      ))
+    }
+    {
+      /* Recents are runtime state, not catalog data; the gap (breaking the
+        contiguous left rail) sets them apart without reading as a new section. */
+    }
+    <button
+      type="button"
+      data-category-btn
+      data-category="recent"
+      aria-pressed="false"
+      class:list={['mt-3', RAIL_BUTTON_CLASS]}
+    >
+      <span class={nameClasses}>Recently used</span>
+      <span data-recent-count class={countClasses}>0</span>
+    </button>
+  </div>
+</SidebarSection>

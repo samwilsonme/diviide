@@ -1,0 +1,82 @@
+---
+// The separator tool, fully prerendered from config.json. A consuming site
+// passes its own (merged) config; the standalone page passes this repo's. All
+// behavior comes from src/tool/main.ts, loaded once below.
+import type { Config } from '../../types';
+import { computeSeparatorCountConfig } from '../../lib/separatorCounts';
+import { iconTemplates } from '../../lib/iconTemplates';
+import SplitBackdrop from '../SplitBackdrop.astro';
+import ColorPicker from './ColorPicker.astro';
+import LabelSection from './LabelSection.astro';
+import CategoryList from './CategoryList.astro';
+import SearchBar from './SearchBar.astro';
+import IconGrid from './IconGrid.astro';
+import FirstVisitBanner from './FirstVisitBanner.astro';
+
+interface Props {
+  config: Config;
+  /**
+   * Shape templates for the grid's baked-in mask data URIs. A consuming site
+   * whose config supersets this repo's icons must pass a merged map here AND to
+   * Base.astro's iconTemplates prop (favicons draw from the same shapes).
+   */
+  templates?: Record<string, string>;
+}
+const { config, templates = iconTemplates } = Astro.props;
+const { separatorCount, colorLabel } = computeSeparatorCountConfig(config);
+---
+
+<!-- Accessible, crawlable page heading. Visually hidden so the app UI is unchanged. -->
+<h1 class="sr-only">
+  Make bookmark separators with {separatorCount} separator icons in {colorLabel} colors
+</h1>
+
+<!--
+  Desktop locks the page to the viewport so the sidebar and grid each scroll on
+  their own — the window itself does not scroll. The grid is pulled full-height
+  and up behind the sticky header with -mt-[calc(var(--spacing-header)+1.75rem)] (header h-header +
+  main's pt-7 = 88px); -mb-20 cancels main's pb-20 so the document stays exactly
+  100dvh tall. Each pane then re-insets its content with pt-[calc(var(--spacing-header)+1.75rem)]/pb-14 so it
+  starts below the header and clears the fixed h-footer footer — but content
+  scrolls up behind the solid header (and footer) as it goes.
+  Below md none of the md: classes apply, so the page stacks and scrolls with the
+  window as before (the sidebar lives in the header drawer on mobile).
+  Wheel events that land outside both panes (header, footer, column gap, outer
+  margins) are routed to them by main.ts: left of the grid pane scrolls the
+  sidebar, right of it scrolls the grid.
+-->
+<SplitBackdrop />
+<div
+  class="md:-mt-[calc(var(--spacing-header)+1.75rem)] md:-mb-20 md:grid md:h-[100dvh] md:grid-cols-[var(--spacing-sidebar)_1fr] md:gap-10"
+>
+  <!-- Sidebar sections — hidden on mobile (moved into the header drawer there) -->
+  <aside class="hidden md:flex md:min-h-0 md:flex-col">
+    <div
+      class="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain pt-[calc(var(--spacing-header)+1.75rem)] pb-14"
+      data-sidebar-home
+    >
+      <div class="space-y-5" data-sidebar>
+        <ColorPicker colors={config.colors} />
+        <LabelSection />
+        <CategoryList config={config} />
+      </div>
+    </div>
+  </aside>
+
+  <!-- Search lives inside the grid's scroll area, so it scrolls up under the header. -->
+  <div class="min-w-0 md:flex md:min-h-0 md:flex-col">
+    <div
+      class="no-scrollbar space-y-5 md:min-h-0 md:flex-1 md:overflow-y-auto md:overscroll-contain md:pt-[calc(var(--spacing-header)+1.75rem)] md:pb-14"
+      data-grid-home
+    >
+      <FirstVisitBanner />
+      <SearchBar separatorCount={separatorCount} />
+      <IconGrid config={config} templates={templates} />
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initTool } from '../../tool/main';
+  initTool();
+</script>

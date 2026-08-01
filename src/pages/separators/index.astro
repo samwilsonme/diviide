@@ -1,0 +1,35 @@
+---
+// The tool page. This single prerendered page also serves every bookmark URL
+// (/separators/?icon=…&color=…): query strings never hit the file system on a
+// static host, and the pre-paint bootstrap in the layout owns the favicon from
+// the query. See src/lib/bookmarkUrl.ts for the whole story.
+import Base from '../../layouts/Base.astro';
+import ToolApp from '../../components/tool/ToolApp.astro';
+import { breadcrumbSchema } from '../../lib/schema';
+import { computeSeparatorCountConfig } from '../../lib/separatorCounts';
+import type { Config } from '../../types';
+import rawConfig from '../../../public/config.json';
+
+const config = rawConfig as unknown as Config;
+const { separatorCount } = computeSeparatorCountConfig(config);
+
+const description = `Pick a color, choose from ${separatorCount} separators, and drag one straight onto your bookmarks bar. Free and open source, no install, no ads.`;
+
+const breadcrumb = breadcrumbSchema([
+  { name: 'Home', path: '/' },
+  { name: 'Separators', path: '/separators/' },
+]);
+---
+
+<!-- At md+ the two panes own all scrolling (see ToolApp), so the page itself must not scroll. -->
+<Base
+  title="Bookmark separator maker"
+  description={description}
+  path="/separators/"
+  jsonLd={[breadcrumb]}
+  withMenu
+  bodyClass="md:overflow-hidden"
+  split
+>
+  <ToolApp config={config} />
+</Base>

@@ -1,0 +1,29 @@
+---
+// The Diviide wordmark. Lettering follows currentColor; the accent strokes
+// follow --accent-live (like BmcLogo, which takes the same class prop).
+//
+// The path data lives in src/lib/logo.ts rather than inline here, because the
+// private site's OG-card generator draws the same wordmark and cannot use CSS
+// paints. It used to regex the <svg> out of this file's source; now both read
+// one list.
+import { LOGO_PATHS, LOGO_VIEWBOX } from '../lib/logo';
+
+interface Props {
+  class?: string;
+}
+const { class: className = 'h-5 w-auto' } = Astro.props;
+---
+
+<svg
+  viewBox={LOGO_VIEWBOX}
+  class:list={['text-foreground', className]}
+  role="img"
+  aria-label="Diviide"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {
+    LOGO_PATHS.map(({ paint, d }) => (
+      <path d={d} fill={paint === 'accent' ? 'var(--accent-live)' : 'currentColor'} />
+    ))
+  }
+</svg>

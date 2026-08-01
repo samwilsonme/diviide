@@ -1,0 +1,222 @@
+---
+// Optional bookmark label: type a label and the dragged bookmark is named
+// after the anchors' hidden link text (see applyLabels in src/tool/labels.ts);
+// a blank input drags an icon-only bookmark. Advanced only decorates existing
+// text, so it shows disabled until there is some.
+// The info popover explains the feature; it links to the folders guide on the
+// live site with an absolute URL, because the guide only exists there (the
+// standalone tool has no guides, so a relative link would 404).
+import SidebarSection from './SidebarSection.astro';
+import AdvancedDisclosure from './AdvancedDisclosure.astro';
+import Lucide from '../icons/Lucide.astro';
+import {
+  FILL_OPTIONS,
+  ALIGN_OPTIONS,
+  PREPEND_OPTIONS,
+  APPEND_OPTIONS,
+  LABEL_PRESETS,
+  LENGTH_MIN,
+  LENGTH_MAX,
+  LENGTH_DEFAULT,
+} from '../../lib/labelFormat';
+import { DEFAULT_SEPARATOR_ICON } from '../../lib/favicon';
+import { iconTemplates } from '../../lib/iconTemplates';
+import { maskUrl } from '../../lib/svgDataUri';
+import { fieldCaption, selectField, textField } from './fieldClasses';
+import { SITE } from '../../content/site';
+
+// The advanced controls reuse the sidebar field recipes (see fieldClasses.ts)
+// so they match the ColorPicker's fields by construction.
+const advSelect = `w-full ${selectField}`;
+// End-cap dropdown captions: '' reads as "None".
+const capLabel = (c: string) => (c === '' ? 'None' : c);
+---
+
+<SidebarSection title="Label">
+  <button
+    slot="action"
+    type="button"
+    aria-label="What is a label?"
+    popovertarget="label-info"
+    data-label-info-btn
+    class="flex h-5 w-5 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+  >
+    <Lucide name="info" class="h-3.5 w-3.5" />
+  </button>
+  <div class="relative">
+    <input
+      type="text"
+      data-label-input
+      spellcheck="false"
+      autocomplete="off"
+      placeholder="e.g. Work"
+      aria-label="Bookmark label"
+      aria-describedby="label-fit"
+      class:list={[textField, 'py-1 pr-9 pl-3']}
+    />
+    <button
+      type="button"
+      data-label-clear
+      hidden
+      class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <Lucide name="x" class="h-4 w-4" />
+      <span class="sr-only">Clear label</span>
+    </button>
+  </div>
+
+  {
+    /* Advanced: pad the label with a fill character, align it, wrap it in
+      end-caps, and hold it to a target character count so it reads as a heading
+      inside a folder. Wired by src/tool/labels.ts; disabled until there is text. */
+  }
+  <AdvancedDisclosure dataAttr="data-label-advanced">
+    {/* One-click looks; the controls below fine-tune. */}
+    <div>
+      <div class="flex items-center justify-between">
+        <span class={fieldCaption}>Presets</span>
+        <button
+          type="button"
+          data-label-reset
+          class="font-mono text-2xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Reset
+        </button>
+      </div>
+      <div class="mt-1 flex flex-wrap gap-1.5">
+        {
+          LABEL_PRESETS.map((preset, i) => (
+            <button
+              type="button"
+              data-label-preset={i}
+              class="rounded-md border border-input px-2 py-1 font-mono text-2xs text-muted-foreground transition-colors hover:border-accent-live hover:text-foreground"
+            >
+              {preset.name}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <label class="flex flex-col gap-1">
+        <span class={fieldCaption}>Fill</span>
+        <select data-label-fill aria-label="Fill character" class={advSelect}>
+          {FILL_OPTIONS.map(([value, label]) => <option value={value}>{label}</option>)}
+          <option value="__other__">Custom…</option>
+        </select>
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class={fieldCaption}>Align</span>
+        <select data-label-align aria-label="Label alignment" class={advSelect}>
+          {ALIGN_OPTIONS.map(([value, label]) => <option value={value}>{label}</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class={fieldCaption}>Prepend</span>
+        <select data-label-prepend aria-label="Prepend character" class={advSelect}>
+          {PREPEND_OPTIONS.map((c) => <option value={c}>{capLabel(c)}</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class={fieldCaption}>Append</span>
+        <select data-label-append aria-label="Append character" class={advSelect}>
+          {APPEND_OPTIONS.map((c) => <option value={c}>{capLabel(c)}</option>)}
+        </select>
+      </label>
+    </div>
+
+    {/* Custom fill glyph, shown only when Fill = Custom. */}
+    <input
+      type="text"
+      data-label-fill-custom
+      hidden
+      maxlength="2"
+      spellcheck="false"
+      autocomplete="off"
+      placeholder="Fill character"
+      aria-label="Custom fill character"
+      class:list={[advSelect, 'px-2.5']}
+    />
+
+    {/* Length last: it counts the label, the fill, and both end-caps. */}
+    <label class="flex flex-col gap-1">
+      <span class="flex items-center justify-between">
+        <span class={fieldCaption}>Length</span>
+        <span data-label-length-value class="font-mono text-2xs text-muted-foreground">
+          {LENGTH_DEFAULT}
+        </span>
+      </span>
+      <input
+        type="range"
+        data-label-length
+        min={LENGTH_MIN}
+        max={LENGTH_MAX}
+        step="1"
+        value={LENGTH_DEFAULT}
+        aria-label="Label length"
+        class="h-2 w-full cursor-pointer accent-accent-live"
+      />
+    </label>
+
+    {
+      /* Live preview. Rendered in system-ui — the same OS UI font Chrome uses
+          for the bookmarks bar/menus — so it reflects the real dropped result
+          (proportional, not the mono structure). The fit meter measures the
+          width against Chrome's truncation caps (see labelFormat + labels.ts). */
+    }
+    <div>
+      <div class="flex items-center justify-between">
+        <span class={fieldCaption}>Preview</span>
+        <button
+          type="button"
+          data-label-copy
+          hidden
+          class="font-mono text-2xs text-accent-ink transition-colors hover:underline"
+        >
+          <span data-label-copy-text>Copy</span>
+        </button>
+      </div>
+      <div
+        class="mt-1 flex items-center gap-2 overflow-x-auto rounded-md border border-input bg-muted/40 px-2.5 py-2 text-xs text-foreground [font-family:system-ui,ui-sans-serif,sans-serif]"
+      >
+        {
+          /* the default Diviide separator favicon, live-tinted like the grid,
+            standing in for the favicon that eats into the width caps */
+        }
+        <span
+          class="separator h-3.5 w-3.5 shrink-0"
+          style={`--mask-url:${maskUrl(iconTemplates[DEFAULT_SEPARATOR_ICON])}`}
+          aria-hidden="true"></span>
+        <span data-label-preview class="whitespace-pre"></span>
+        <span data-label-preview-empty class="text-muted-foreground/80">Type a label above</span>
+      </div>
+      {
+        /* The fit verdict is the label input's description rather than a live
+          region: labels.ts rewrites it on every keystroke, so aria-live meant a
+          screen reader announced a new pixel width per character typed. As a
+          description it is read on focus and re-readable on demand, which is how
+          the sighted meter is used too. */
+      }
+      <span id="label-fit" data-label-fit class="mt-1 block font-mono text-2xs"></span>
+    </div>
+  </AdvancedDisclosure>
+</SidebarSection>
+
+<div
+  popover
+  id="label-info"
+  data-label-popover
+  class="fixed m-0 space-y-2 rounded-md border bg-popover p-4 text-sm text-popover-foreground shadow-md"
+>
+  <p class="text-muted-foreground">
+    A label adds text beside the separator's icon. Drop a labeled separator inside a folder to title
+    a group of bookmarks, so it reads like a heading.
+  </p>
+  <a
+    href={`${SITE.baseUrl}/guides/bookmark-folders/`}
+    class="inline-block font-medium text-accent-ink hover:underline"
+  >
+    How to use bookmark folders →
+  </a>
+</div>

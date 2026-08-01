@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+# Block the query-based bookmark URLs (e.g. /separators/?icon=pipe&color=rose);
+# they each serve the app with a frozen favicon and have no unique content. The
+# /separators/ picker page itself (no query) stays crawlable.
+Disallow: /separators/?
+Allow: /separators/$
+
+# AI and answer engines are welcome to read the content
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /

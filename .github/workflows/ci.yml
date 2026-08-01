@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The checks only read the repo; never hand pnpm lifecycle scripts a writable
+# ambient token.
+permissions:
+  contents: read
+
+# Quality checks (lint, format, tests) plus a build. This repo is not deployed
+# standalone — divii.de is built from the private site, which consumes
+# this tool as a submodule. So CI owns the build here: it's the only thing that
+# verifies the public tool still compiles before the site pulls it in. Mark this
+# workflow's check as required in branch protection on `main`.
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Read the pinned pnpm version from package.json's packageManager field.
+      # Must run before setup-node so its pnpm-store cache can resolve.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      # The tone-of-voice rules (American English, no em dashes, no "colorful").
+      # These used to live in the Vitest suite, which made a typo in a code
+      # comment a test failure.
+      - run: pnpm run lint:copy
+      - run: pnpm run format:check
+      - run: pnpm run test:run
+      - run: pnpm run build

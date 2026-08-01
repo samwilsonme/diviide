@@ -1,0 +1,78 @@
+---
+// The full catalog, prerendered from config.json: every tile is a real anchor
+// whose href is its bookmark URL, so drag-to-bookmark works before (and without)
+// JS. The runtime (src/tool/main.ts) keeps hrefs on the selected color, filters
+// by category/search, and owns the drag/click contract via event delegation.
+// Each tile's mask is baked in as a data: URI, so the grid costs no icon
+// requests — the shapes already ride the page (the pre-paint bootstrap inlines
+// the same templates for the favicon).
+import type { Config } from '../../types';
+import { bookmarkUrl } from '../../lib/bookmarkUrl';
+import { DEFAULT_COLOR_HEX } from '../../lib/colors';
+import { iconTemplates } from '../../lib/iconTemplates';
+import { maskUrl } from '../../lib/svgDataUri';
+
+interface Props {
+  config: Config;
+  /**
+   * Shape templates (icon name -> source SVG) the tiles bake in as mask data
+   * URIs. Defaults to this repo's own icons; a consuming site with a superset
+   * config must pass a merged map (mirrors Base.astro's iconTemplates prop).
+   */
+  templates?: Record<string, string>;
+}
+const { config, templates = iconTemplates } = Astro.props;
+
+// A config icon without a template is a build-input bug — fail the build
+// loudly rather than prerender a tile with an empty mask.
+function maskFor(iconName: string): string {
+  const svg = templates[iconName];
+  if (!svg) throw new Error(`IconGrid: no source SVG template for icon "${iconName}"`);
+  return maskUrl(svg);
+}
+---
+
+<div class="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-2" data-grid>
+  {
+    Object.entries(config.icons).map(([iconName, iconData]) => (
+      <a
+        href={bookmarkUrl(iconName, DEFAULT_COLOR_HEX)}
+        draggable="true"
+        data-tile
+        data-icon={iconName}
+        data-category={iconData.category}
+        data-search={`${iconData.name} ${iconData.keywords.join(' ')}`.toLowerCase()}
+        title={iconData.name}
+        aria-label={iconData.name}
+        class="mx-auto flex aspect-square w-full max-w-14 cursor-grab items-center justify-center rounded-lg border transition-colors hover:border-accent-live active:cursor-grabbing"
+      >
+        <span
+          class="separator h-6 w-6"
+          style={`--mask-url:${maskFor(iconName)}`}
+          aria-hidden="true"
+        />
+        {/* The decorated drag title, written by applyLabels() in src/tool/labels.ts.
+            It has to be real DOM text: the browser names a dropped bookmark after
+            the anchor's link text. That is also why the tile carries an explicit
+            aria-label above — otherwise this span becomes the tile's accessible
+            name, and typing a label renames all of them to the same string. */}
+        <span class="sr-only" data-label />
+      </a>
+    ))
+  }
+</div>
+
+<div class="py-16 text-center" role="status" data-no-results hidden>
+  <p class="text-base font-semibold text-foreground" data-no-results-title>No separators found</p>
+  <p class="mt-2 font-mono text-xs text-muted-foreground/80" data-no-results-message>
+    Try another category.
+  </p>
+  <div class="mt-5 flex justify-center gap-4 text-sm">
+    <button type="button" data-clear-search-btn hidden class="text-accent-ink hover:underline">
+      Clear search
+    </button>
+    <button type="button" data-reset-category-btn hidden class="text-accent-ink hover:underline">
+      Show all categories
+    </button>
+  </div>
+</div>

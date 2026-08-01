@@ -1,0 +1,14 @@
+/*
+ * App stylesheet entry: the Tailwind engine, then the Diviide design system
+ * (tokens, base layer, utilities, keyframes) from theme.css.
+ *
+ * This is the only stylesheet entry in either repo. The consuming site has none of
+ * its own — its shell renders this repo's Base layout, which imports this file, and
+ * Tailwind's auto-detection scans both source trees from here. Adding a second
+ * entry with its own `@import 'tailwindcss'` would ship the engine twice.
+ *
+ * theme.css is a separate file so it can also be imported on its own, after
+ * Tailwind, without re-importing the engine.
+ */
+@import 'tailwindcss';
+@import './theme.css';
