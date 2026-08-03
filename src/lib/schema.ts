@@ -12,6 +12,12 @@ type Json = Record<string, unknown>;
 
 const abs = (path: string) => `${SITE.baseUrl}${path}`;
 
+// Google's VideoObject parser rejects a bare calendar date for uploadDate: it
+// needs a full ISO 8601 datetime with a timezone. Anchor a bare YYYY-MM-DD to
+// midnight UTC; pass through any value that already carries a time.
+const toIsoDateTime = (date: string): string =>
+  /^\d{4}-\d{2}-\d{2}$/.test(date) ? `${date}T00:00:00+00:00` : date;
+
 /**
  * Serialize a schema block for a <script type="application/ld+json"> tag.
  * JSON.stringify alone is not safe against `set:html`: a string field
@@ -101,7 +107,11 @@ export function videoObjectSchema(opts: {
   contentUrl: string;
   /** Public path to a still/poster; defaults to the brand OG image. */
   thumbnailUrl?: string;
-  /** ISO date the clip was published. Defaults to the site's content date. */
+  /**
+   * When the clip was published: a bare `YYYY-MM-DD` date or a full ISO 8601
+   * datetime. Normalized to a timezone-qualified datetime for Google's parser.
+   * Defaults to the site's content date.
+   */
   uploadDate?: string;
 }): Json {
   return {
@@ -110,7 +120,7 @@ export function videoObjectSchema(opts: {
     name: opts.name,
     description: opts.description,
     thumbnailUrl: abs(opts.thumbnailUrl ?? SITE.defaultOgImage),
-    uploadDate: opts.uploadDate ?? '2026-08-01',
+    uploadDate: toIsoDateTime(opts.uploadDate ?? '2026-08-01'),
     contentUrl: abs(opts.contentUrl),
   };
 }

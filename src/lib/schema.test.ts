@@ -71,12 +71,13 @@ describe('videoObjectSchema', () => {
     });
     expect(schema.contentUrl).toBe(`${SITE.baseUrl}/diviide-welcome.mp4`);
     expect(schema.thumbnailUrl).toBe(`${SITE.baseUrl}${SITE.defaultOgImage}`);
-    // Google's VideoObject parser needs an ISO date; pin the shape, not just
-    // that some default exists.
-    expect(schema.uploadDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    // Google's VideoObject parser rejects a bare date; the default must be a
+    // timezone-qualified ISO 8601 datetime. Pin the shape, not just that some
+    // default exists.
+    expect(schema.uploadDate).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/);
   });
 
-  it('uses a provided thumbnail and upload date', () => {
+  it('normalizes a bare upload date to a timezone-qualified datetime', () => {
     const schema = videoObjectSchema({
       name: 'Welcome',
       description: 'Intro clip.',
@@ -85,7 +86,17 @@ describe('videoObjectSchema', () => {
       uploadDate: '2026-01-02',
     });
     expect(schema.thumbnailUrl).toBe(`${SITE.baseUrl}/poster.png`);
-    expect(schema.uploadDate).toBe('2026-01-02');
+    expect(schema.uploadDate).toBe('2026-01-02T00:00:00+00:00');
+  });
+
+  it('passes through an upload date that already carries a time and timezone', () => {
+    const schema = videoObjectSchema({
+      name: 'Welcome',
+      description: 'Intro clip.',
+      contentUrl: '/clip.mp4',
+      uploadDate: '2026-01-02T09:30:00+01:00',
+    });
+    expect(schema.uploadDate).toBe('2026-01-02T09:30:00+01:00');
   });
 });
 
